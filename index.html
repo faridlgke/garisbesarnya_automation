@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>garisbesarnya Automation</title>
+<meta name="description" content="Pantauan alur satir harian garisbesarnya dari bahan berita sampai terbit, dibaca langsung dari basis datanya.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #0B0B0A; --panel: #141412; --ink: #EDE6D6; --ink-2: #A9A291; --ink-3: #6A6558; --rule: #2A2824; --rule-2: #3A3731;
+    --kuning: #F5C518; --kuning-ink: #0B0B0A; --ok: #8FBF7A; --warn: #E0B35C; --bad: #E08A8A;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --judul: "Archivo Black", var(--sans);
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #F4EFE3; --panel: #FBF8F1; --ink: #161512; --ink-2: #5E594E; --ink-3: #9C968A; --rule: #E2DACA; --rule-2: #CFC6B3;
+      --kuning: #B98A00; --kuning-ink: #FFFFFF; --ok: #3F7A33; --warn: #9A6A12; --bad: #A33A3A;
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #F4EFE3; --panel: #FBF8F1; --ink: #161512; --ink-2: #5E594E; --ink-3: #9C968A; --rule: #E2DACA; --rule-2: #CFC6B3;
+    --kuning: #B98A00; --kuning-ink: #FFFFFF; --ok: #3F7A33; --warn: #9A6A12; --bad: #A33A3A;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); padding: 32px 16px 72px; line-height: 1.5; font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 1120px; margin: 0 auto; }
+  a { color: var(--kuning); }
+  button { font: inherit; cursor: pointer; }
+  button:focus-visible, a:focus-visible, select:focus-visible { outline: 2px solid var(--kuning); outline-offset: 3px; }
+
+  .tajuk { padding-bottom: 28px; margin-bottom: 32px; border-bottom: 1px solid var(--ink); }
+  .nama { font-family: var(--judul); font-size: clamp(2.2rem, 9vw, 5.6rem); line-height: 0.95; letter-spacing: -0.02em; margin: 0; overflow-wrap: anywhere; }
+  .nama span { color: var(--kuning); }
+  .sub { font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; font-size: 0.86rem; color: var(--ink-2); margin: 14px 0 18px; }
+  .sangkal { max-width: 70ch; margin: 0; padding: 12px 16px; border-left: 3px solid var(--kuning); background: var(--panel); font-size: 0.93rem; }
+  .meta { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 18px; color: var(--ink-2); font-size: 0.84rem; }
+  .ghost { background: none; border: 1px solid var(--rule-2); color: var(--ink); border-radius: 999px; padding: 6px 14px; font-size: 0.82rem; }
+  .ghost:hover { border-color: var(--ink-2); }
+
+  .sungai { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin: 8px 0 36px; }
+  .tahap { border-top: 2px solid var(--rule-2); padding-top: 10px; }
+  .tahap.hidup { border-color: var(--kuning); }
+  .tahap .n { font-family: var(--judul); font-size: clamp(1.4rem, 4vw, 2.4rem); line-height: 1; }
+  .tahap .l { font-size: 0.74rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-2); margin-top: 6px; }
+  .tahap .k { font-size: 0.8rem; color: var(--ink-3); margin-top: 2px; }
+
+  .tab { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 1px solid var(--rule); margin-bottom: 24px; }
+  .tab button { background: none; border: 0; border-bottom: 2px solid transparent; color: var(--ink-2); padding: 10px 14px; font-weight: 600; font-size: 0.9rem; }
+  .tab button[aria-selected="true"] { color: var(--ink); border-color: var(--kuning); }
+  section[hidden] { display: none; }
+  h2 { font-family: var(--judul); font-weight: 400; font-size: 1.3rem; margin: 28px 0 12px; letter-spacing: -0.01em; }
+  h2:first-child { margin-top: 0; }
+  .ket { color: var(--ink-2); font-size: 0.88rem; margin: -6px 0 14px; max-width: 75ch; }
+
+  .tabel { width: 100%; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  th { text-align: left; font-weight: 600; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-2); padding: 8px 10px; border-bottom: 1px solid var(--rule-2); white-space: nowrap; }
+  td { padding: 9px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  td.angka { text-align: right; font-family: var(--mono); }
+  td.kecil { color: var(--ink-2); font-size: 0.82rem; white-space: nowrap; }
+  td a { color: var(--ink); text-decoration-color: var(--rule-2); }
+  td a:hover { text-decoration-color: var(--kuning); }
+  .state { color: var(--ink-2); padding: 18px 10px; }
+  .err { color: var(--bad); }
+
+  .pil { display: inline-block; border-radius: 999px; padding: 1px 9px; font-size: 0.74rem; font-weight: 600; border: 1px solid var(--rule-2); color: var(--ink-2); white-space: nowrap; }
+  .pil.dikirim, .pil.revisi { border-color: var(--warn); color: var(--warn); }
+  .pil.setuju, .pil.dirender, .pil.terbit { border-color: var(--ok); color: var(--ok); }
+  .pil.tolak { border-color: var(--bad); color: var(--bad); }
+  .pil.pilih { background: var(--kuning); color: var(--kuning-ink); border-color: var(--kuning); }
+
+  .cerita { background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; padding: 20px; margin-bottom: 18px; scroll-margin-top: 16px; }
+  .cerita:target { border-color: var(--kuning); }
+  .cerita .atas { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: baseline; }
+  .cerita h3 { font-family: var(--judul); font-weight: 400; font-size: 1.5rem; margin: 6px 0 4px; letter-spacing: -0.01em; }
+  .cerita .kode { font-family: var(--mono); color: var(--kuning); font-size: 0.86rem; }
+  .cerita .premis { color: var(--ink-2); margin: 4px 0 14px; max-width: 75ch; }
+  .rinci { display: flex; gap: 6px 16px; flex-wrap: wrap; font-size: 0.82rem; color: var(--ink-3); margin-bottom: 16px; }
+  .naskah { list-style: none; padding: 0; margin: 0 0 8px; counter-reset: f; }
+  .naskah li { counter-increment: f; display: grid; grid-template-columns: 2.2em 1fr auto; gap: 10px; padding: 6px 0; border-bottom: 1px dashed var(--rule); align-items: baseline; }
+  .naskah li::before { content: counter(f); color: var(--ink-3); font-family: var(--mono); font-size: 0.8rem; }
+  .naskah .kata { font-family: var(--judul); font-size: 0.82rem; letter-spacing: 0.04em; color: var(--kuning); text-transform: uppercase; }
+  details { margin-top: 12px; border-top: 1px solid var(--rule); padding-top: 10px; }
+  summary { cursor: pointer; font-weight: 600; font-size: 0.9rem; }
+  .dua { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 10px; }
+  .dua h4 { margin: 0 0 6px; font-size: 0.76rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-2); }
+  .dua ul { margin: 0; padding-left: 18px; font-size: 0.9rem; }
+  .caption { white-space: pre-wrap; font-size: 0.9rem; background: var(--bg); border: 1px solid var(--rule); border-radius: 4px; padding: 10px 12px; margin: 6px 0 12px; }
+  .pagar { margin-top: 12px; font-size: 0.86rem; }
+  .pagar .b { color: var(--bad); }
+  .pagar .p { color: var(--warn); }
+  .kosong { border: 1px dashed var(--rule-2); border-radius: 6px; padding: 28px 20px; color: var(--ink-2); text-align: center; }
+
+  @media (max-width: 720px) {
+    .sungai { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 18px; }
+    .dua { grid-template-columns: 1fr; }
+    .naskah li { grid-template-columns: 1.8em 1fr; }
+    .naskah .kata { grid-column: 2; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="tajuk">
+    <p class="nama">garis<span>besar</span>nya</p>
+    <p class="sub">Satir harian · alur otomatis</p>
+    <p class="sangkal">Fase 1: bahan berita dikumpulkan dan dipilih setiap pagi, lalu satu cerita kiasan ditulis dan dikirim ke WhatsApp pemilik untuk disetujui. Tidak ada yang tayang tanpa persetujuan manusia. Video masih dirender studio dari naskah yang sudah disetujui.</p>
+    <div class="meta"><span id="diperbarui">memuat…</span><button class="ghost" id="muat">Muat ulang</button><button class="ghost" id="tema" aria-label="Ganti tema">Tema</button></div>
+  </header>
+
+  <div class="sungai" id="sungai" aria-label="Lima tahap">
+    <div class="tahap"><div class="n" id="n-bahan">–</div><div class="l">Bahan</div><div class="k">dua hari terakhir</div></div>
+    <div class="tahap"><div class="n" id="n-draft">–</div><div class="l">Draft</div><div class="k">cerita ditulis</div></div>
+    <div class="tahap"><div class="n" id="n-video">–</div><div class="l">Desain/Video</div><div class="k">menunggu render</div></div>
+    <div class="tahap"><div class="n" id="n-konfirmasi">–</div><div class="l">Konfirmasi</div><div class="k">menunggu balasan</div></div>
+    <div class="tahap"><div class="n" id="n-terbit">–</div><div class="l">Terbit</div><div class="k">Fase 3</div></div>
+  </div>
+
+  <nav class="tab" role="tablist">
+    <button role="tab" data-t="bahan" aria-selected="true">Bahan</button>
+    <button role="tab" data-t="draft" aria-selected="false">Draft</button>
+    <button role="tab" data-t="video" aria-selected="false">Desain/Video</button>
+    <button role="tab" data-t="konfirmasi" aria-selected="false">Konfirmasi</button>
+    <button role="tab" data-t="terbit" aria-selected="false">Terbit</button>
+  </nav>
+
+  <section id="t-bahan">
+    <h2>Pilihan triase</h2>
+    <p class="ket">Tiap pagi berita dinilai dari judul dan ringkasannya: sedang ramai, polanya bisa dikiaskan, bukan tragedi. Peringkat 1 ditulis, dua berikutnya cadangan kalau cerita hari itu dihentikan.</p>
+    <div class="tabel"><table id="pilihan"><thead><tr><th>Tanggal</th><th>#</th><th>Skor</th><th>Judul</th><th>Pola</th><th>Topik</th></tr></thead><tbody><tr><td colspan="6" class="state">memuat…</td></tr></tbody></table></div>
+    <h2>Bahan masuk</h2>
+    <p class="ket">Berita yang dikumpulkan, terbaru di atas. Gambar dari sumber berita tidak pernah dipakai.</p>
+    <div class="tabel"><table id="bahan"><thead><tr><th>Terbit</th><th>Sumber</th><th>Penerbit</th><th>Judul</th></tr></thead><tbody><tr><td colspan="4" class="state">memuat…</td></tr></tbody></table></div>
+  </section>
+
+  <section id="t-draft" hidden>
+    <h2>Cerita</h2>
+    <p class="ket">Premis, kiasan inti, naskah per frasa dengan kata yang tampil di layar, papan adegan untuk studio, caption, dan catatan fakta dua sisi yang diperiksa pemilik sebelum menyetujui.</p>
+    <div id="draft"><div class="state">memuat…</div></div>
+  </section>
+
+  <section id="t-video" hidden>
+    <h2>Desain/Video</h2>
+    <p class="ket">Naskah yang sudah disetujui dan diserahkan ke studio untuk dirender. Hasil render wajib lolos cek tampilan sebelum dikirim lagi untuk konfirmasi video (Fase 2).</p>
+    <div class="tabel"><table id="video"><thead><tr><th>Kode</th><th>Tanggal</th><th>Judul</th><th>Durasi</th><th>Status</th></tr></thead><tbody><tr><td colspan="5" class="state">memuat…</td></tr></tbody></table></div>
+  </section>
+
+  <section id="t-konfirmasi" hidden>
+    <h2>Konfirmasi WhatsApp</h2>
+    <p class="ket">Balasan pemilik: ACC menyetujui naskah, REVISI menulis ulang sesuai catatan (paling banyak tiga kali), HENTIKAN membatalkan dan menulis berita cadangan.</p>
+    <div class="tabel"><table id="konfirmasi"><thead><tr><th>Kode</th><th>Judul</th><th>Status</th><th>Putaran</th><th>Dikirim</th><th>Diputus</th><th>Keterangan</th></tr></thead><tbody><tr><td colspan="7" class="state">memuat…</td></tr></tbody></table></div>
+  </section>
+
+  <section id="t-terbit" hidden>
+    <h2>Terbit</h2>
+    <div class="kosong">Belum ada yang terbit. Penjadwalan ke Instagram Reels, TikTok, YouTube Shorts, dan Threads lewat Postiz dimulai di Fase 3, sesudah video lolos konfirmasi.</div>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var URL_ = "https://khntypqoxcwntfnvewzy.supabase.co/rest/v1/";
+  var KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtobnR5cHFveGN3bnRmbnZld3p5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE1NTc3NDEsImV4cCI6MjA4NzEzMzc0MX0.YvLe6hRXZSPvc_vamBa9TWc5RhHAqQ25tNKh-c7Nncc";
+  var B = "&brand=eq.garisbesarnya";
+  var STATUS = { draf: "draf", dikirim: "menunggu balasan", revisi: "sedang direvisi", setuju: "disetujui", tolak: "dihentikan", dirender: "dirender", terbit: "terbit" };
+
+  function el(id) { return document.getElementById(id); }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function ambil(path) {
+    return fetch(URL_ + path, { headers: { apikey: KEY, Authorization: "Bearer " + KEY } }).then(function (r) {
+      if (!r.ok) return r.text().then(function (t) { throw new Error(r.status + " " + t.slice(0, 160)); });
+      return r.json();
+    });
+  }
+  function hitung(path) {
+    return fetch(URL_ + path, { method: "HEAD", headers: { apikey: KEY, Authorization: "Bearer " + KEY, Prefer: "count=exact" } }).then(function (r) {
+      var m = /\/(\d+)$/.exec(r.headers.get("content-range") || "");
+      return m ? +m[1] : 0;
+    });
+  }
+  function galat(e, objek) {
+    var m = e && e.message || String(e);
+    if (/PGRST205|42P01|does not exist/.test(m)) return objek + " belum ada di basis data, jalankan sql/001_gb_cerita.sql";
+    return "gagal memuat " + objek + ": " + m;
+  }
+  function tgl(s) {
+    if (!s) return "–";
+    var d = new Date(String(s).length <= 10 ? s + "T00:00:00" : String(s).replace(" ", "T"));
+    if (isNaN(d)) return esc(s);
+    var opsi = String(s).length <= 10 ? { day: "numeric", month: "short" } : { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" };
+    return d.toLocaleString("id-ID", opsi);
+  }
+  function hariLalu(n) { var d = new Date(Date.now() + 7 * 3600e3 - n * 864e5); return d.toISOString().slice(0, 10); }
+  function pil(status) { return '<span class="pil ' + esc(status) + '">' + esc(STATUS[status] || status) + "</span>"; }
+
+  // Sumber Google News tampil apa adanya, sumber lain "Referensi eksternal N"
+  var ext = {};
+  function labelSumber(s) {
+    if (/^gn_/.test(s || "")) return "Google News";
+    if (!(s in ext)) ext[s] = Object.keys(ext).length + 1;
+    return "Referensi eksternal " + ext[s];
+  }
+
+  function gambarPilihan(rows) {
+    var tb = el("pilihan").querySelector("tbody");
+    if (!rows.length) { tb.innerHTML = '<tr><td colspan="6" class="state">belum ada triase</td></tr>'; return; }
+    tb.innerHTML = rows.map(function (r) {
+      return "<tr><td class='kecil'>" + tgl(r.tanggal) + "</td><td class='angka'>" + esc(r.peringkat) + (r.dipilih ? " <span class='pil pilih'>pilih</span>" : "") +
+        "</td><td class='angka'>" + esc(r.skor) + "</td><td><a href='" + esc(r.link) + "' target='_blank' rel='noopener'>" + esc(r.news_title) + "</a></td><td>" +
+        esc(r.alasan) + "</td><td class='kecil'>" + esc(r.kelompok || "") + "<br>" + esc((r.jenis || "") + (r.pilar ? " · " + r.pilar : "")) + "</td></tr>";
+    }).join("");
+  }
+
+  function gambarBahan(rows) {
+    var tb = el("bahan").querySelector("tbody");
+    if (!rows.length) { tb.innerHTML = '<tr><td colspan="4" class="state">belum ada bahan</td></tr>'; return; }
+    tb.innerHTML = rows.map(function (r) {
+      return "<tr><td class='kecil'>" + tgl(r.published_time) + "</td><td class='kecil'>" + esc(labelSumber(r.source)) + "</td><td class='kecil'>" + esc(r.penerbit || "") +
+        "</td><td><a href='" + esc(r.link) + "' target='_blank' rel='noopener'>" + esc(r.news_title) + "</a></td></tr>";
+    }).join("");
+  }
+
+  function daftarFakta(isi, ref) {
+    if (!isi || !isi.length) return "<li>(kosong)</li>";
+    return isi.map(function (k) {
+      var x = ref[k.sumber];
+      return "<li>" + esc(k.isi) + (x ? " <span style='color:var(--ink-3)'>[" + esc(k.sumber) + " " + esc(x.penerbit) + "]</span>" : "") + "</li>";
+    }).join("");
+  }
+
+  function kartu(c) {
+    var ref = {};
+    (c.referensi || []).forEach(function (x) { ref[x.n] = x; });
+    var f = c.fakta || {}, cap = c.caption || {}, yt = cap.youtube_shorts || {}, pg = c.pagar || {};
+    var naskah = (c.naskah || []).map(function (x) { return "<li><span>" + esc(x.frasa) + "</span><span class='kata'>" + esc(x.kata_layar) + "</span></li>"; }).join("");
+    var papan = (c.papan_adegan || []).map(function (a) {
+      return "<tr><td class='kecil'>" + esc((a.frasa || []).join(", ")) + "</td><td>" + esc(a.adegan) + "</td><td class='kecil'>" + esc(a.kamera) +
+        "</td><td>" + esc(a.kuning) + "</td><td>" + esc(a.gerak) + "</td></tr>";
+    }).join("");
+    var pagar = (pg.blokir || []).map(function (x) { return "<div class='b'>⛔ " + esc(x) + "</div>"; }).join("") +
+      (pg.peringatan || []).map(function (x) { return "<div class='p'>⚠ " + esc(x) + "</div>"; }).join("");
+    return "<article class='cerita' id='" + esc(c.kode) + "'>" +
+      "<div class='atas'><span class='kode'>" + esc(c.kode) + " · " + tgl(c.tanggal) + (c.putaran > 1 ? " · revisi ke-" + (c.putaran - 1) : "") + "</span>" + pil(c.status) + "</div>" +
+      "<h3>" + esc(c.judul) + "</h3><p class='premis'>" + esc(c.premis) + "</p>" +
+      "<div class='rinci'><span>Kiasan: " + esc(c.kiasan_inti) + "</span><span>" + esc(c.jumlah_kata) + " kata · sekitar " + esc(c.durasi_perkiraan) + " detik</span><span>" +
+      esc((c.jenis || "") + (c.pilar ? " · " + c.pilar : "")) + "</span>" + (c.alasan_status ? "<span>" + esc(c.alasan_status) + "</span>" : "") + "</div>" +
+      (c.catatan_revisi ? "<p class='ket'>Catatan revisi pemilik: " + esc(c.catatan_revisi) + "</p>" : "") +
+      "<ol class='naskah'>" + naskah + "</ol>" +
+      "<details><summary>Papan adegan</summary><div class='tabel'><table><thead><tr><th>Frasa</th><th>Adegan</th><th>Kamera</th><th>Kuning</th><th>Gerak</th></tr></thead><tbody>" + papan + "</tbody></table></div></details>" +
+      "<details><summary>Caption</summary><h4 style='margin:10px 0 0'>Instagram</h4><div class='caption'>" + esc(cap.instagram) + "</div>" +
+      "<h4 style='margin:0'>TikTok</h4><div class='caption'>" + esc(cap.tiktok) + "</div>" +
+      "<h4 style='margin:0'>YouTube Shorts</h4><div class='caption'><b>" + esc(yt.judul) + "</b>\n" + esc(yt.deskripsi) + "</div>" +
+      "<h4 style='margin:0'>Threads</h4><div class='caption'>" + esc(cap.threads) + "</div>" +
+      "<div class='kecil' style='color:var(--ink-2)'>" + (c.tagar || []).map(function (t) { return "#" + esc(t); }).join(" ") + "</div></details>" +
+      "<details><summary>Fakta dua sisi</summary><p>" + esc(f.isu) + "</p><div class='dua'><div><h4>Klaim resmi</h4><ul>" + daftarFakta(f.klaim_resmi, ref) +
+      "</ul></div><div><h4>Kritik atau pembanding</h4><ul>" + daftarFakta(f.kritik, ref) + "</ul></div></div>" +
+      (f.belum_jelas ? "<p><b>Belum jelas:</b> " + esc(f.belum_jelas) + "</p>" : "") + (f.risiko ? "<p><b>Risiko salah baca:</b> " + esc(f.risiko) + "</p>" : "") +
+      "<h4 style='margin:12px 0 4px;font-size:.76rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)'>Sumber</h4><ol style='margin:0;padding-left:20px;font-size:.88rem'>" +
+      (c.referensi || []).map(function (x) { return "<li>" + esc(x.penerbit) + ": <a href='" + esc(x.link) + "' target='_blank' rel='noopener'>" + esc(x.judul) + "</a></li>"; }).join("") + "</ol></details>" +
+      (pagar ? "<div class='pagar'>" + pagar + "</div>" : "<div class='pagar' style='color:var(--ok)'>Pagar garis merah: lolos</div>") +
+      "</article>";
+  }
+
+  function gambarCerita(rows) {
+    el("draft").innerHTML = rows.length ? rows.map(kartu).join("") : "<div class='kosong'>Belum ada cerita. Cerita pertama ditulis sesudah triase pagi.</div>";
+    var video = rows.filter(function (c) { return ["setuju", "dirender", "terbit"].indexOf(c.status) >= 0; });
+    el("video").querySelector("tbody").innerHTML = video.length ? video.map(function (c) {
+      return "<tr><td class='kecil'><a href='#" + esc(c.kode) + "'>" + esc(c.kode) + "</a></td><td class='kecil'>" + tgl(c.tanggal) + "</td><td>" + esc(c.judul) +
+        "</td><td class='angka'>" + esc(c.durasi_perkiraan) + " s</td><td>" + (c.status === "setuju" ? "<span class='pil dikirim'>menunggu render studio</span>" : pil(c.status)) + "</td></tr>";
+    }).join("") : "<tr><td colspan='5' class='state'>belum ada naskah yang disetujui</td></tr>";
+    el("konfirmasi").querySelector("tbody").innerHTML = rows.length ? rows.map(function (c) {
+      return "<tr><td class='kecil'><a href='#" + esc(c.kode) + "'>" + esc(c.kode) + "</a></td><td>" + esc(c.judul) + "</td><td>" + pil(c.status) + "</td><td class='angka'>" + esc(c.putaran) +
+        "</td><td class='kecil'>" + tgl(c.dikirim_wib) + "</td><td class='kecil'>" + tgl(c.diputus_wib) + "</td><td class='kecil' style='white-space:normal'>" + esc(c.alasan_status || "") + "</td></tr>";
+    }).join("") : "<tr><td colspan='7' class='state'>belum ada</td></tr>";
+    var n = function (st) { return rows.filter(function (c) { return st.indexOf(c.status) >= 0; }).length; };
+    el("n-draft").textContent = rows.length;
+    el("n-video").textContent = n(["setuju"]);
+    el("n-konfirmasi").textContent = n(["dikirim", "revisi"]);
+    el("n-terbit").textContent = n(["terbit"]);
+    ["n-draft", "n-video", "n-konfirmasi", "n-terbit"].forEach(function (id) { el(id).parentNode.classList.toggle("hidup", +el(id).textContent > 0); });
+    if (location.hash && el(location.hash.slice(1))) { pilihTab("draft"); el(location.hash.slice(1)).scrollIntoView(); }
+  }
+
+  function muat() {
+    el("diperbarui").textContent = "memuat…";
+    ext = {};
+    var dua = hariLalu(2);
+    hitung("rk_daftar_artikel?select=id" + B + "&published_time=gte." + dua).then(function (n) {
+      el("n-bahan").textContent = n; el("n-bahan").parentNode.classList.toggle("hidup", n > 0);
+    }).catch(function () { el("n-bahan").textContent = "?"; });
+    ambil("rk_pilihan_harian?select=*" + B + "&order=tanggal.desc,peringkat.asc&limit=24").then(gambarPilihan).catch(function (e) {
+      el("pilihan").querySelector("tbody").innerHTML = "<tr><td colspan='6' class='state err'>" + esc(galat(e, "rk_pilihan_harian")) + "</td></tr>";
+    });
+    ambil("rk_daftar_artikel?select=source,penerbit,news_title,published_time,link" + B + "&order=published_time.desc,masuk_wib.desc&limit=200").then(gambarBahan).catch(function (e) {
+      el("bahan").querySelector("tbody").innerHTML = "<tr><td colspan='4' class='state err'>" + esc(galat(e, "rk_daftar_artikel")) + "</td></tr>";
+    });
+    ambil("gb_cerita_terbaru?select=*&limit=40").then(gambarCerita).catch(function (e) {
+      var p = "<div class='state err'>" + esc(galat(e, "gb_cerita_terbaru")) + "</div>";
+      el("draft").innerHTML = p;
+      ["video", "konfirmasi"].forEach(function (id) { el(id).querySelector("tbody").innerHTML = "<tr><td colspan='7' class='state err'>" + esc(galat(e, "gb_cerita_terbaru")) + "</td></tr>"; });
+    }).then(function () {
+      el("diperbarui").textContent = "diperbarui " + new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+    });
+  }
+
+  function pilihTab(t) {
+    document.querySelectorAll(".tab button").forEach(function (b) { b.setAttribute("aria-selected", b.dataset.t === t ? "true" : "false"); });
+    document.querySelectorAll("section[id^='t-']").forEach(function (s) { s.hidden = s.id !== "t-" + t; });
+    try { localStorage.setItem("gb_tab", t); } catch (e) {}
+  }
+  document.querySelectorAll(".tab button").forEach(function (b) { b.addEventListener("click", function () { pilihTab(b.dataset.t); }); });
+  el("muat").addEventListener("click", muat);
+  el("tema").addEventListener("click", function () {
+    var r = document.documentElement, gelap = r.dataset.theme ? r.dataset.theme === "dark" : !matchMedia("(prefers-color-scheme: light)").matches;
+    r.dataset.theme = gelap ? "light" : "dark";
+    try { localStorage.setItem("gb_tema", r.dataset.theme); } catch (e) {}
+  });
+  try {
+    var t = localStorage.getItem("gb_tema"); if (t) document.documentElement.dataset.theme = t;
+    var tb = localStorage.getItem("gb_tab"); if (tb && el("t-" + tb)) pilihTab(tb);
+  } catch (e) {}
+  muat();
+  setInterval(muat, 5 * 60 * 1000);
+})();
+</script>
+</body>
+</html>
