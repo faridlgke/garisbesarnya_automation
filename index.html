@@ -108,6 +108,15 @@
   dialog.besar img { width: 100%; height: auto; display: block; border-radius: 4px; }
   dialog.besar p { color: #EDE6D6; font-size: 0.9rem; margin: 10px 2px 0; }
   dialog.besar button { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,.6); color: #EDE6D6; border: 1px solid #3A3731; border-radius: 999px; padding: 4px 12px; }
+  .progres { margin: 14px 0 10px; padding: 12px 14px; border: 1px solid var(--rule-2); border-radius: 6px; background: var(--bg); }
+  .progres .baris { display: flex; justify-content: space-between; gap: 12px; font-size: 0.86rem; margin-bottom: 8px; }
+  .progres .baris b { font-family: var(--judul); font-weight: 400; font-size: 1.1rem; color: var(--kuning); }
+  .progres .bilah { height: 8px; border-radius: 999px; background: var(--rule); overflow: hidden; }
+  .progres .isi { height: 100%; width: 0; background: var(--kuning); border-radius: 999px; transition: width 0.45s linear; }
+  .progres .waktu { font-size: 0.76rem; color: var(--ink-3); margin-top: 6px; }
+  .progres.galat { border-color: var(--bad); }
+  .progres.galat .isi { background: var(--bad); }
+  .progres.beres .isi { background: var(--ok); }
   .video { margin: 14px 0 6px; }
   .video video { width: 100%; max-width: 300px; aspect-ratio: 9 / 16; background: #000; border: 1px solid var(--rule); border-radius: 4px; display: block; }
   .video .cek { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
@@ -285,6 +294,73 @@
       (st.gagal ? " · <span style='color:var(--bad)'>" + esc(st.gagal) + " panel gagal</span>" : "") + "</p>";
   }
 
+  // Kemajuan kerja latar (gb_cerita.progres, ditulis pustaka.Progres di laci).
+  // Persen nyata dari panel dan bingkai yang selesai, langkah yang tidak bisa
+  // diintip (GPT, ElevenLabs) diisi menurut lama biasanya tapi tidak pernah
+  // melewati 95 persen rentang langkahnya sebelum langkah itu benar-benar selesai.
+  var PROSES = ["dipilih", "revisi", "setuju", "video_revisi"];
+  var progresAktif = {};
+  function hitungPersen(p) {
+    if (!p) return 0;
+    var persen = p.persen || 0;
+    if (p.perkiraan_detik && !p.selesai) {
+      var lewat = (Date.now() - new Date(p.mulai_langkah).getTime()) / 1000;
+      var kira = p.awal + (p.akhir - p.awal) * Math.min(0.95, Math.max(0, lewat / p.perkiraan_detik));
+      persen = Math.max(persen, kira);
+    }
+    return Math.min(100, Math.round(persen));
+  }
+  function durasiTeks(detik) {
+    detik = Math.max(0, Math.round(detik));
+    return Math.floor(detik / 60) + ":" + ("0" + (detik % 60)).slice(-2);
+  }
+  function blokProgres(c) {
+    var p = c.progres;
+    var segar = p && p.selesai && (Date.now() - new Date(p.diperbarui).getTime() < 120000);
+    if (!p || (!(PROSES.indexOf(c.status) >= 0) && !segar)) return "";
+    progresAktif[c.kode] = p;
+    return "<div class='progres' data-progres='" + esc(c.kode) + "'><div class='baris'><span class='langkah'></span><b class='angka'></b></div>" +
+      "<div class='bilah'><div class='isi'></div></div><div class='waktu'></div></div>";
+  }
+  function segarkanProgres() {
+    Object.keys(progresAktif).forEach(function (kode) {
+      var p = progresAktif[kode];
+      document.querySelectorAll("[data-progres='" + kode + "']").forEach(function (elm) {
+        var persen = p.galat ? (p.persen || 0) : hitungPersen(p);
+        elm.querySelector(".isi").style.width = persen + "%";
+        elm.querySelector(".angka").textContent = persen + "%";
+        elm.querySelector(".langkah").textContent = p.galat ? "gagal: " + p.galat : p.langkah;
+        var lewat = ((p.selesai ? new Date(p.diperbarui).getTime() : Date.now()) - new Date(p.mulai).getTime()) / 1000;
+        var basi = !p.selesai && (Date.now() - new Date(p.diperbarui).getTime() > 180000);
+        elm.querySelector(".waktu").textContent = (p.selesai ? "selesai dalam " : "berjalan ") + durasiTeks(lewat) +
+          (basi ? " · tidak ada kabar dari laci sejak " + durasiTeks((Date.now() - new Date(p.diperbarui).getTime()) / 1000) + " lalu" : "");
+        elm.classList.toggle("galat", !!p.galat);
+        elm.classList.toggle("beres", !!p.selesai && !p.galat);
+      });
+    });
+  }
+  setInterval(segarkanProgres, 500);
+
+  // Pantau ringan: cuma kode, status, progres. Tiap 3 detik selama ada yang
+  // dikerjakan, tiap 15 detik kalau tidak (menangkap ACC baru dari WhatsApp).
+  // Halaman digambar ulang penuh HANYA saat status berganti, supaya video
+  // yang sedang diputar dan bagian yang dibuka tidak ter-reset.
+  var statusDikenal = {};
+  function pantau() {
+    ambil("gb_cerita_terbaru?select=kode,status,progres&status=in.(" + PROSES.join(",") + ")").then(function (rows) {
+      var berubah = false;
+      rows.forEach(function (r) {
+        if (statusDikenal[r.kode] !== r.status) berubah = true;
+        progresAktif[r.kode] = r.progres;
+      });
+      Object.keys(statusDikenal).forEach(function (k) {
+        if (PROSES.indexOf(statusDikenal[k]) >= 0 && !rows.some(function (r) { return r.kode === k; })) berubah = true;
+      });
+      if (berubah) muat();
+      setTimeout(pantau, rows.length ? 3000 : 15000);
+    }).catch(function () { setTimeout(pantau, 15000); });
+  }
+
   // Animatic gb/video.py: MP4 dan lembar cek tampilan di bucket gb-video
   function blokVideo(c) {
     var v = c.video;
@@ -301,7 +377,7 @@
     var u = c.usulan || {};
     return "<article class='cerita usulan' id='" + esc(c.kode) + "'><div class='atas'><span class='kode'>" + esc(c.kode) + " · usulan " +
       esc(u.urut || "") + " · " + esc(c.batch_usulan || "") + "</span>" + pil(c.status) + "</div>" +
-      "<h3>" + esc(c.judul) + "</h3>" +
+      "<h3>" + esc(c.judul) + "</h3>" + blokProgres(c) +
       "<p class='premis'><b>Pola:</b> " + esc(u.pola || "-") + "<br><b>Kiasan:</b> " + esc(u.kiasan || "-") + "<br><b>Dua sisi:</b> " + esc(u.sisi || "-") + "</p>" +
       "<div class='rinci'><span>skor " + esc(u.skor) + "</span><span>" + esc(u.penerbit || "") + "</span>" +
       (u.link ? "<span><a href='" + esc(u.link) + "' target='_blank' rel='noopener'>berita</a></span>" : "") +
@@ -325,6 +401,7 @@
       "<div class='rinci'><span>Kiasan: " + esc(c.kiasan_inti) + "</span><span>" + esc(c.jumlah_kata) + " kata · sekitar " + esc(c.durasi_perkiraan) + " detik</span><span>" +
       esc((c.jenis || "") + (c.pilar ? " · " + c.pilar : "")) + "</span>" + (c.alasan_status ? "<span>" + esc(c.alasan_status) + "</span>" : "") + "</div>" +
       (c.catatan_revisi ? "<p class='ket'>Catatan revisi pemilik: " + esc(c.catatan_revisi) + "</p>" : "") +
+      (["revisi"].indexOf(c.status) >= 0 ? blokProgres(c) : "") +
       blokVideo(c) +
       storyboard(c) +
       "<ol class='naskah'>" + naskah + "</ol>" +
@@ -344,14 +421,17 @@
   }
 
   function gambarCerita(rows) {
+    progresAktif = {};
+    statusDikenal = {};
+    rows.forEach(function (c) { statusDikenal[c.kode] = c.status; });
     var cerita = rows.filter(BERNASKAH);
     var usulan = rows.filter(function (c) { return ["usulan", "lewat"].indexOf(c.status) >= 0 || (c.status === "dipilih"); });
     el("usulan").innerHTML = usulan.length ? usulan.map(kartuUsulan).join("") : "<div class='kosong'>Belum ada usulan topik. Tiga usulan dikirim tiap pagi sesudah triase.</div>";
     el("draft").innerHTML = cerita.length ? cerita.map(kartu).join("") : "<div class='kosong'>Belum ada storyboard. Naskah dan storyboard dibuat sesudah satu usulan dipilih.</div>";
-    var video = rows.filter(function (c) { return c.video && c.video.path || c.status === "setuju"; });
+    var video = rows.filter(function (c) { return c.video && c.video.path || c.status === "setuju" || c.status === "video_revisi"; });
     el("video").innerHTML = video.length ? video.map(function (c) {
       return "<article class='cerita'><div class='atas'><span class='kode'><a href='#" + esc(c.kode) + "'>" + esc(c.kode) + "</a> · " + tgl(c.tanggal) + "</span>" + pil(c.status) + "</div>" +
-        "<h3>" + esc(c.judul) + "</h3>" + (blokVideo(c) || "<p class='papan-ket'>Video sedang dibuat.</p>") + "</article>";
+        "<h3>" + esc(c.judul) + "</h3>" + blokProgres(c) + (blokVideo(c) || "") + "</article>";
     }).join("") : "<div class='kosong'>Belum ada video. Video dibuat sesudah storyboard disetujui.</div>";
     el("konfirmasi").querySelector("tbody").innerHTML = rows.length ? rows.map(function (c) {
       return "<tr><td class='kecil'><a href='#" + esc(c.kode) + "'>" + esc(c.kode) + "</a></td><td>" + esc(c.judul) + "</td><td>" + pil(c.status) + "</td><td class='angka'>" + esc(c.putaran) +
@@ -426,7 +506,12 @@
     var tb = localStorage.getItem("gb_tab"); if (tb && el("t-" + tb)) pilihTab(tb);
   } catch (e) {}
   muat();
-  setInterval(muat, 5 * 60 * 1000);
+  setTimeout(pantau, 3000);
+  setInterval(function () {
+    // muat penuh berkala dilewati kalau ada video yang sedang diputar
+    var putar = Array.prototype.some.call(document.querySelectorAll("video"), function (v) { return !v.paused; });
+    if (!putar) muat();
+  }, 5 * 60 * 1000);
 })();
 </script>
 </body>
