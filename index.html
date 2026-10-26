@@ -255,15 +255,15 @@
   .naskah-daftar .kata { font-family: var(--judul); font-weight: 800; font-size: 0.74rem; letter-spacing: .04em; color: var(--accent); background: var(--kuning); color: #0B0B0A; border-radius: 4px; padding: 1px 6px; }
   .rinci .papan-tabel td { white-space: normal; font-size: 0.84rem; }
   .pagar-b { color: var(--bad); } .pagar-p { color: var(--warn); }
-  .item .pemutar-kecil { position: relative; display: block; width: 100%; aspect-ratio: 9 / 16; border-radius: 10px; overflow: hidden; background: #0B0B0A; border: 1px solid var(--gold); }
-  .item .pemutar-kecil img { width: 100%; height: 100%; object-fit: cover; opacity: .45; display: block; }
-  .item .pemutar-kecil .tumpang { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 18px; color: #EDE6D6; font-size: 0.76rem; text-align: center; gap: 4px; }
-  .item .pemutar-kecil .persen-besar { font-family: var(--judul); font-weight: 800; font-size: 2.4rem; line-height: 1; color: #F5C518; }
-  .item .pemutar-kecil .garis-render { position: absolute; left: 0; bottom: 0; height: 4px; width: 0; background: #F5C518; transition: width .45s linear; }
-  .item .pemutar-kecil .gelombang { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; gap: 5px; }
-  .item .pemutar-kecil .gelombang i { width: 5px; height: 44px; background: #F5C518; border-radius: 3px; animation: gelombang 1s ease-in-out infinite; }
-  .item .pemutar-kecil .gelombang i:nth-child(2) { animation-delay: .15s; } .item .pemutar-kecil .gelombang i:nth-child(3) { animation-delay: .3s; }
-  .item .pemutar-kecil .gelombang i:nth-child(4) { animation-delay: .45s; } .item .pemutar-kecil .gelombang i:nth-child(5) { animation-delay: .6s; }
+  .pemutar-kecil { position: relative; display: block; width: 100%; aspect-ratio: 9 / 16; border-radius: 10px; overflow: hidden; background: #0B0B0A; border: 1px solid var(--gold); }
+  .pemutar-kecil img { width: 100%; height: 100%; object-fit: cover; opacity: .45; display: block; }
+  .pemutar-kecil .tumpang { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 18px; color: #EDE6D6; font-size: 0.76rem; text-align: center; gap: 4px; }
+  .pemutar-kecil .persen-besar { font-family: var(--judul); font-weight: 800; font-size: 2.4rem; line-height: 1; color: #F5C518; }
+  .pemutar-kecil .garis-render { position: absolute; left: 0; bottom: 0; height: 4px; width: 0; background: #F5C518; transition: width .45s linear; }
+  .pemutar-kecil .gelombang { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; gap: 5px; }
+  .pemutar-kecil .gelombang i { width: 5px; height: 44px; background: #F5C518; border-radius: 3px; animation: gelombang 1s ease-in-out infinite; }
+  .pemutar-kecil .gelombang i:nth-child(2) { animation-delay: .15s; } .item .pemutar-kecil .gelombang i:nth-child(3) { animation-delay: .3s; }
+  .pemutar-kecil .gelombang i:nth-child(4) { animation-delay: .45s; } .item .pemutar-kecil .gelombang i:nth-child(5) { animation-delay: .6s; }
   .item .sampul-video { aspect-ratio: 9 / 16; }
   .item .sampul-video img { aspect-ratio: 9 / 16; }
   .lihat .isi-video { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 24px; padding-top: 14px; }
@@ -895,7 +895,8 @@
         return '<li data-rentang="' + s[1] + "-" + s[2] + '"><span class="tanda">○</span><span class="nama">' + esc(s[0]) + "<small>" + esc(s[3]) + '</small></span><span class="bilah-kecil"><span class="isi"></span></span><span class="angka-tahap">0%</span></li>';
       }).join("") + "</ol>";
     } else if (v.path) {
-      kiri = '<video controls preload="metadata" playsinline src="' + esc(PUBLIK + "gb-video/" + v.path) + '"></video>';
+      var sampul = sampulPanel(c);
+      kiri = '<video controls preload="metadata" playsinline' + (sampul ? ' poster="' + esc(sampul) + '"' : "") + ' src="' + esc(PUBLIK + "gb-video/" + v.path) + '"></video>';
       kanan = '<p class="lead" style="margin-top:0">Versi ' + esc(v.versi) + ", " + esc(Math.round(v.durasi || 0)) + " detik, suara " + esc(v.suara || "") + "." +
         (v.catatan_revisi ? " Revisi: " + esc(v.catatan_revisi) : "") + '</p><div class="cek">' + (v.lembar_cek || []).map(function (p, i) {
           return '<a class="ghost" style="text-decoration:none" href="' + esc(PUBLIK + "gb-video/" + p) + '" target="_blank" rel="noopener noreferrer">lembar cek ' + (i + 1) + "</a>";
@@ -1018,7 +1019,7 @@
       });
       var putar = Array.prototype.some.call(document.querySelectorAll("video"), function (v) { return !v.paused; });
       if (berubah && !putar) muat();
-      setTimeout(pantau, rows.length ? 3000 : 15000);
+      setTimeout(pantau, rows.length ? 3000 : 8000);
     }).catch(function () { setTimeout(pantau, 15000); });
   }
   el("muat-ulang").addEventListener("click", muat);
