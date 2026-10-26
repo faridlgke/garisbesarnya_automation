@@ -896,6 +896,35 @@
     g.innerHTML = rows.map(itemVideo).join("");
     pasangBuka(g);
   }
+  // Metadata video di dialog (pemilik 26 Oktober 2026: bukan sekadar tombol lembar cek):
+  // judul, deskripsi, spesifikasi, kiasan, sumber informasi, kredit, status. Pola kotak .rinci BS.
+  var NARATOR = { elevenlabs: "ElevenLabs" };
+  function metaVideo(c, v) {
+    var cap = c.caption || {};
+    var dibuat = v.dibuat_at ? fmtPukul(new Date(new Date(v.dibuat_at).getTime() + 7 * 3600e3).toISOString().replace("T", " ")) : "–";
+    var shot = (c.papan_adegan || []).reduce(function (n, a) { return n + ((a.shot || []).length); }, 0);
+    var cek = (v.lembar_cek || []).map(function (p, i) {
+      return '<a class="tautan" href="' + esc(PUBLIK + "gb-video/" + p) + '" target="_blank" rel="noopener noreferrer">lembar ' + (i + 1) + "</a>";
+    }).join(" · ");
+    return '<div class="rinci" style="padding:18px 20px">' +
+      '<section style="grid-column:1/-1"><h6>Judul</h6><p style="margin:0;font-family:var(--judul);font-weight:700;font-size:1.15rem">' + esc(c.judul) + "</p>" +
+      '<p style="margin:8px 0 0;color:var(--ink-2)">' + esc(c.premis || "") + "</p></section>" +
+      '<div class="spek">' +
+        "<div><h6>Durasi</h6><p>" + esc(Math.round(v.durasi || 0)) + " detik</p><span>versi " + esc(v.versi) + " · 720 × 1280, 30 fps</span></div>" +
+        "<div><h6>Narator</h6><p>" + esc(v.narator || (v.suara === "elevenlabs" ? "suara bawaan" : (v.suara || "–"))) + "</p><span>" + esc(NARATOR[v.suara] || "") + (c.jumlah_kata ? ", " + esc(c.jumlah_kata) + " kata" : "") + "</span></div>" +
+        "<div><h6>Dibuat</h6><p>" + esc(dibuat) + "</p><span>" + esc((c.naskah || []).length) + " frasa" + (shot ? ", " + shot + " shot" : "") + "</span></div>" +
+      "</div>" +
+      '<section class="kol-slide"><h6>Kiasan</h6><p style="margin:0">' + esc(c.kiasan_inti || "–") + "</p>" +
+        ((c.fakta || {}).isu ? '<div class="kotak"><h6>Isu sebenarnya</h6><p>' + esc(c.fakta.isu) + "</p></div>" : "") + "</section>" +
+      '<section class="kol-cap"><h6>Sumber informasi</h6><p style="margin:0"><strong>' + esc(c.penerbit || "–") + "</strong>, " + esc(fmtHari(c.published_time)) + "</p>" +
+        '<p style="margin:6px 0 0"><a class="tautan" href="' + esc(aman(c.link)) + '" target="_blank" rel="noopener noreferrer">' + esc(dekode(c.news_title) || "berita sumber") + "</a></p>" +
+        ((c.referensi || []).length > 1 ? '<p class="redup" style="margin:6px 0 0;font-size:.82rem">+' + ((c.referensi || []).length - 1) + " berita pembanding</p>" : "") +
+        (cap.kredit ? '<div class="kotak"><h6>Kredit di akhir video</h6><p>Diadaptasi dari pemberitaan ' + esc(c.penerbit || "") + ", " + esc(fmtHari(c.published_time)) + "</p></div>" : "") + "</section>" +
+      '<footer class="kaki-rinci"><span>Status: ' + status(STATUS_GB, c.status) + (c.alasan_status ? " " + esc(c.alasan_status) : "") + "</span>" +
+        (v.catatan_revisi ? "<span>Revisi video: " + esc(v.catatan_revisi) + "</span>" : "") +
+        (cek ? "<span>Cek tampilan: " + cek + "</span>" : "") + "</footer></div>";
+  }
+
   function bukaVideo(kode) {
     var c = CERITA[kode];
     if (!c) return;
@@ -911,10 +940,7 @@
     } else if (v.path) {
       var sampul = sampulPanel(c);
       kiri = '<video controls preload="metadata" playsinline' + (sampul ? ' poster="' + esc(sampul) + '"' : "") + ' src="' + esc(PUBLIK + "gb-video/" + v.path) + '"></video>';
-      kanan = '<p class="lead" style="margin-top:0">Versi ' + esc(v.versi) + ", " + esc(Math.round(v.durasi || 0)) + " detik, suara " + esc(v.suara || "") + "." +
-        (v.catatan_revisi ? " Revisi: " + esc(v.catatan_revisi) : "") + '</p><div class="cek">' + (v.lembar_cek || []).map(function (p, i) {
-          return '<a class="ghost" style="text-decoration:none" href="' + esc(PUBLIK + "gb-video/" + p) + '" target="_blank" rel="noopener noreferrer">lembar cek ' + (i + 1) + "</a>";
-        }).join("") + "</div>";
+      kanan = metaVideo(c, v);
     } else {
       kiri = '<div class="kosong" style="aspect-ratio:9/16;display:grid;place-items:center;border:1px dashed var(--rule-2);border-radius:10px">menyiapkan</div>';
       kanan = '<p class="lead" style="margin-top:0">Video sedang disiapkan.</p>';
