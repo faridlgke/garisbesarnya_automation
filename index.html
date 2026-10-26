@@ -780,7 +780,7 @@
   // Tiga draf naskah (rantai GPT, sejak 26 Oktober 2026 malam): pemilik memilih lewat ACC <kode> A/B/C
   function rinciDraf(c) {
     var dn = c.draf_naskah || {};
-    var KRIT = ["kail", "kejelasan_kiasan", "eskalasi", "pembalik_penutup", "narasi_melengkapi_gambar", "bisa_digambar", "tahan_bantahan"];
+    var KRIT = ["daya_tarik_cerita", "kail", "kejelasan_kiasan", "eskalasi", "pembalik_penutup", "narasi_melengkapi_gambar", "bisa_digambar", "tahan_bantahan"];
     var kolom = (dn.draf || []).map(function (d) {
       var n = d.naskah || {}, v = d.nilai || {}, t = d.tebakan || {}, k = d.konsep || {};
       var angka = KRIT.map(function (x) { return v[x]; }).filter(function (x) { return x != null; });
