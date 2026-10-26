@@ -94,6 +94,20 @@
   .pagar { margin-top: 12px; font-size: 0.86rem; }
   .pagar .b { color: var(--bad); }
   .pagar .p { color: var(--warn); }
+  .papan { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin: 16px 0 6px; }
+  .papan figure { margin: 0; }
+  .papan button { display: block; width: 100%; padding: 0; border: 1px solid var(--rule); border-radius: 4px; background: #0B0B0A; aspect-ratio: 2 / 3; overflow: hidden; }
+  .papan button:hover { border-color: var(--kuning); }
+  .papan img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .papan .gagal { display: flex; align-items: center; justify-content: center; height: 100%; color: var(--bad); font-size: 0.8rem; padding: 8px; text-align: center; }
+  .papan figcaption { font-size: 0.76rem; color: var(--ink-3); margin-top: 6px; line-height: 1.35; }
+  .papan figcaption b { color: var(--kuning); font-family: var(--judul); font-weight: 400; letter-spacing: 0.04em; display: block; }
+  .papan-ket { font-size: 0.8rem; color: var(--ink-3); }
+  dialog.besar { border: 0; padding: 0; background: transparent; max-width: min(92vw, 560px); }
+  dialog.besar::backdrop { background: rgba(0, 0, 0, 0.82); }
+  dialog.besar img { width: 100%; height: auto; display: block; border-radius: 4px; }
+  dialog.besar p { color: #EDE6D6; font-size: 0.9rem; margin: 10px 2px 0; }
+  dialog.besar button { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,.6); color: #EDE6D6; border: 1px solid #3A3731; border-radius: 999px; padding: 4px 12px; }
   .kosong { border: 1px dashed var(--rule-2); border-radius: 6px; padding: 28px 20px; color: var(--ink-2); text-align: center; }
 
   @media (max-width: 720px) {
@@ -162,6 +176,7 @@
   </section>
 </div>
 
+<dialog class="besar" id="besar"><button type="button">Tutup</button><img alt=""><p></p></dialog>
 <script>
 (function () {
   "use strict";
@@ -234,6 +249,27 @@
     }).join("");
   }
 
+  // Storyboard gb/storyboard.py: satu panel per adegan, cuma yang cocok dengan putaran naskah sekarang
+  var GAMBAR = "https://khntypqoxcwntfnvewzy.supabase.co/storage/v1/object/public/gb-storyboard/";
+  function storyboard(c) {
+    var st = c.storyboard;
+    if (!st || !st.panel) return "<p class='papan-ket'>Storyboard belum digambar.</p>";
+    var basi = st.putaran !== c.putaran;
+    var papan = c.papan_adegan || [];
+    var isi = st.panel.map(function (p, i) {
+      var a = papan[i] || {};
+      var kata = (p.frasa || []).map(function (n) { return ((c.naskah || [])[n - 1] || {}).kata_layar || ""; }).filter(Boolean).join(" / ");
+      var ket = "Panel " + p.n + " · frasa " + esc((p.frasa || []).join(", ")) + " · " + esc(a.kamera || "") + ". " + esc(a.adegan || "");
+      var badan = p.path
+        ? "<button type='button' data-besar='" + esc(GAMBAR + p.path) + "' data-ket='" + ket + "' aria-label='Perbesar panel " + p.n + "'><img loading='lazy' src='" + esc(GAMBAR + p.path) + "' alt='" + ket + "'></button>"
+        : "<button type='button' disabled><span class='gagal'>gagal digambar</span></button>";
+      return "<figure>" + badan + "<figcaption><b>" + esc(kata.toUpperCase()) + "</b>" + p.n + " · frasa " + esc((p.frasa || []).join(", ")) + " · " + esc(a.kamera || "") + "</figcaption></figure>";
+    }).join("");
+    return "<div class='papan'>" + isi + "</div><p class='papan-ket'>Storyboard " + esc(st.model) + " " + esc(st.kualitas) +
+      (basi ? " · <span style='color:var(--warn)'>dari putaran " + esc(st.putaran) + ", naskah sudah direvisi</span>" : "") +
+      (st.gagal ? " · <span style='color:var(--bad)'>" + esc(st.gagal) + " panel gagal</span>" : "") + "</p>";
+  }
+
   function kartu(c) {
     var ref = {};
     (c.referensi || []).forEach(function (x) { ref[x.n] = x; });
@@ -251,6 +287,7 @@
       "<div class='rinci'><span>Kiasan: " + esc(c.kiasan_inti) + "</span><span>" + esc(c.jumlah_kata) + " kata · sekitar " + esc(c.durasi_perkiraan) + " detik</span><span>" +
       esc((c.jenis || "") + (c.pilar ? " · " + c.pilar : "")) + "</span>" + (c.alasan_status ? "<span>" + esc(c.alasan_status) + "</span>" : "") + "</div>" +
       (c.catatan_revisi ? "<p class='ket'>Catatan revisi pemilik: " + esc(c.catatan_revisi) + "</p>" : "") +
+      storyboard(c) +
       "<ol class='naskah'>" + naskah + "</ol>" +
       "<details><summary>Papan adegan</summary><div class='tabel'><table><thead><tr><th>Frasa</th><th>Adegan</th><th>Kamera</th><th>Kuning</th><th>Gerak</th></tr></thead><tbody>" + papan + "</tbody></table></div></details>" +
       "<details><summary>Caption</summary><h4 style='margin:10px 0 0'>Instagram</h4><div class='caption'>" + esc(cap.instagram) + "</div>" +
@@ -316,6 +353,16 @@
   }
   document.querySelectorAll(".tab button").forEach(function (b) { b.addEventListener("click", function () { pilihTab(b.dataset.t); }); });
   el("muat").addEventListener("click", muat);
+  var dlg = el("besar");
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest && e.target.closest("[data-besar]");
+    if (!b) return;
+    dlg.querySelector("img").src = b.dataset.besar;
+    dlg.querySelector("img").alt = b.dataset.ket;
+    dlg.querySelector("p").textContent = b.dataset.ket;
+    dlg.showModal();
+  });
+  dlg.addEventListener("click", function (e) { if (e.target === dlg || e.target.tagName === "BUTTON") dlg.close(); });
   el("tema").addEventListener("click", function () {
     var r = document.documentElement, gelap = r.dataset.theme ? r.dataset.theme === "dark" : !matchMedia("(prefers-color-scheme: light)").matches;
     r.dataset.theme = gelap ? "light" : "dark";
