@@ -108,6 +108,10 @@
   dialog.besar img { width: 100%; height: auto; display: block; border-radius: 4px; }
   dialog.besar p { color: #EDE6D6; font-size: 0.9rem; margin: 10px 2px 0; }
   dialog.besar button { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,.6); color: #EDE6D6; border: 1px solid #3A3731; border-radius: 999px; padding: 4px 12px; }
+  .video { margin: 14px 0 6px; }
+  .video video { width: 100%; max-width: 300px; aspect-ratio: 9 / 16; background: #000; border: 1px solid var(--rule); border-radius: 4px; display: block; }
+  .video .cek { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+  .cerita.usulan h3 { font-size: 1.15rem; }
   .kosong { border: 1px dashed var(--rule-2); border-radius: 6px; padding: 28px 20px; color: var(--ink-2); text-align: center; }
 
   @media (max-width: 720px) {
@@ -123,16 +127,16 @@
   <header class="tajuk">
     <p class="nama">garis<span>besar</span>nya</p>
     <p class="sub">Satir harian · alur otomatis</p>
-    <p class="sangkal">Fase 1: bahan berita dikumpulkan dan dipilih setiap pagi, lalu satu cerita kiasan ditulis dan dikirim ke WhatsApp pemilik untuk disetujui. Tidak ada yang tayang tanpa persetujuan manusia. Video masih dirender studio dari naskah yang sudah disetujui.</p>
+    <p class="sangkal">Tiap pagi bahan berita dikumpulkan dan dinilai, lalu tiga usulan topik dikirim ke WhatsApp pemilik. Sesudah satu dipilih, naskah dan storyboard dibuat dan disetujui, lalu video dibuat dan disetujui lagi. Tidak ada yang tayang tanpa persetujuan manusia di setiap gerbang.</p>
     <div class="meta"><span id="diperbarui">memuat…</span><button class="ghost" id="muat">Muat ulang</button><button class="ghost" id="tema" aria-label="Ganti tema">Tema</button></div>
   </header>
 
   <div class="sungai" id="sungai" aria-label="Lima tahap">
     <div class="tahap"><div class="n" id="n-bahan">–</div><div class="l">Bahan</div><div class="k">dua hari terakhir</div></div>
-    <div class="tahap"><div class="n" id="n-draft">–</div><div class="l">Draft</div><div class="k">cerita ditulis</div></div>
-    <div class="tahap"><div class="n" id="n-video">–</div><div class="l">Desain/Video</div><div class="k">menunggu render</div></div>
+    <div class="tahap"><div class="n" id="n-draft">–</div><div class="l">Draft</div><div class="k">naskah dan storyboard</div></div>
+    <div class="tahap"><div class="n" id="n-video">–</div><div class="l">Desain/Video</div><div class="k">animatic</div></div>
     <div class="tahap"><div class="n" id="n-konfirmasi">–</div><div class="l">Konfirmasi</div><div class="k">menunggu balasan</div></div>
-    <div class="tahap"><div class="n" id="n-terbit">–</div><div class="l">Terbit</div><div class="k">Fase 3</div></div>
+    <div class="tahap"><div class="n" id="n-terbit">–</div><div class="l">Terbit</div><div class="k">siap dan terjadwal</div></div>
   </div>
 
   <nav class="tab" role="tablist">
@@ -145,7 +149,7 @@
 
   <section id="t-bahan">
     <h2>Pilihan triase</h2>
-    <p class="ket">Tiap pagi berita dinilai dari judul dan ringkasannya: sedang ramai, polanya bisa dikiaskan, bukan tragedi. Peringkat 1 ditulis, dua berikutnya cadangan kalau cerita hari itu dihentikan.</p>
+    <p class="ket">Tiap pagi berita dinilai dari judul dan ringkasannya: sedang ramai, polanya bisa dikiaskan, bukan tragedi. Tiga teratas dari kelompok topik berbeda jadi usulan topik, berikutnya dipakai kalau pemilik membalas GANTI.</p>
     <div class="tabel"><table id="pilihan"><thead><tr><th>Tanggal</th><th>#</th><th>Skor</th><th>Judul</th><th>Pola</th><th>Topik</th></tr></thead><tbody><tr><td colspan="6" class="state">memuat…</td></tr></tbody></table></div>
     <h2>Bahan masuk</h2>
     <p class="ket">Berita yang dikumpulkan, terbaru di atas. Gambar dari sumber berita tidak pernah dipakai.</p>
@@ -153,26 +157,29 @@
   </section>
 
   <section id="t-draft" hidden>
-    <h2>Cerita</h2>
-    <p class="ket">Premis, kiasan inti, naskah per frasa dengan kata yang tampil di layar, papan adegan untuk studio, caption, dan catatan fakta dua sisi yang diperiksa pemilik sebelum menyetujui.</p>
+    <h2>Usulan topik</h2>
+    <p class="ket">Gerbang 1: tiga usulan tiap pagi, masing-masing dengan pola yang disindir, usulan kiasan, dan dua sisi fakta singkat. Pemilik memilih satu dengan ACC atau meminta tiga lain dengan GANTI.</p>
+    <div id="usulan"><div class="state">memuat…</div></div>
+    <h2>Storyboard dan naskah</h2>
+    <p class="ket">Gerbang 2: storyboard per panel, naskah per frasa dengan kata yang tampil di layar, papan adegan, caption, dan catatan fakta dua sisi yang diperiksa pemilik sebelum menyetujui.</p>
     <div id="draft"><div class="state">memuat…</div></div>
   </section>
 
   <section id="t-video" hidden>
     <h2>Desain/Video</h2>
-    <p class="ket">Naskah yang sudah disetujui dan diserahkan ke studio untuk dirender. Hasil render wajib lolos cek tampilan sebelum dikirim lagi untuk konfirmasi video (Fase 2).</p>
-    <div class="tabel"><table id="video"><thead><tr><th>Kode</th><th>Tanggal</th><th>Judul</th><th>Durasi</th><th>Status</th></tr></thead><tbody><tr><td colspan="5" class="state">memuat…</td></tr></tbody></table></div>
+    <p class="ket">Gerbang 3: animatic dari storyboard yang disetujui. Panel bergerak sesuai kamera papan adegan, suara narasi ElevenLabs, dan satu kata di tengah layar mengikuti suara. Tiap versi membawa lembar cek tampilan.</p>
+    <div id="video"><div class="state">memuat…</div></div>
   </section>
 
   <section id="t-konfirmasi" hidden>
     <h2>Konfirmasi WhatsApp</h2>
-    <p class="ket">Balasan pemilik: ACC menyetujui naskah, REVISI menulis ulang sesuai catatan (paling banyak tiga kali), HENTIKAN membatalkan dan menulis berita cadangan.</p>
+    <p class="ket">Balasan pemilik sama di tiap gerbang: ACC memilih atau menyetujui, REVISI memperbaiki sesuai catatan (paling banyak tiga kali per gerbang), GANTI meminta usulan topik lain, HENTIKAN membatalkan.</p>
     <div class="tabel"><table id="konfirmasi"><thead><tr><th>Kode</th><th>Judul</th><th>Status</th><th>Putaran</th><th>Dikirim</th><th>Diputus</th><th>Keterangan</th></tr></thead><tbody><tr><td colspan="7" class="state">memuat…</td></tr></tbody></table></div>
   </section>
 
   <section id="t-terbit" hidden>
     <h2>Terbit</h2>
-    <div class="kosong">Belum ada yang terbit. Penjadwalan ke Instagram Reels, TikTok, YouTube Shorts, dan Threads lewat Postiz dimulai di Fase 3, sesudah video lolos konfirmasi.</div>
+    <div class="kosong">Belum ada yang terbit. Video yang disetujui menunggu di status siap terbit sampai akun Instagram, TikTok, YouTube, dan Threads garisbesarnya tersambung ke Postiz.</div>
   </section>
 </div>
 
@@ -183,7 +190,12 @@
   var URL_ = "https://khntypqoxcwntfnvewzy.supabase.co/rest/v1/";
   var KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtobnR5cHFveGN3bnRmbnZld3p5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE1NTc3NDEsImV4cCI6MjA4NzEzMzc0MX0.YvLe6hRXZSPvc_vamBa9TWc5RhHAqQ25tNKh-c7Nncc";
   var B = "&brand=eq.garisbesarnya";
-  var STATUS = { draf: "draf", dikirim: "menunggu balasan", revisi: "sedang direvisi", setuju: "disetujui", tolak: "dihentikan", dirender: "dirender", terbit: "terbit" };
+  var STATUS = { usulan: "usulan, menunggu dipilih", lewat: "tidak dipilih", dipilih: "dipilih, naskah dibuat", draf: "draf",
+    dikirim: "storyboard menunggu balasan", revisi: "sedang direvisi", setuju: "storyboard disetujui, video dibuat",
+    video_dikirim: "video menunggu balasan", video_revisi: "video sedang diperbaiki", siap_terbit: "siap terbit",
+    tolak: "dihentikan", dirender: "dirender", terbit: "terbit" };
+  var VIDEO = "https://khntypqoxcwntfnvewzy.supabase.co/storage/v1/object/public/gb-video/";
+  var BERNASKAH = function (c) { return c.naskah && c.naskah.length && ["usulan", "lewat", "dipilih"].indexOf(c.status) < 0; };
 
   function el(id) { return document.getElementById(id); }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
@@ -270,6 +282,29 @@
       (st.gagal ? " · <span style='color:var(--bad)'>" + esc(st.gagal) + " panel gagal</span>" : "") + "</p>";
   }
 
+  // Animatic gb/video.py: MP4 dan lembar cek tampilan di bucket gb-video
+  function blokVideo(c) {
+    var v = c.video;
+    if (!v || !v.path) return "";
+    var cek = (v.lembar_cek || []).map(function (p, i) {
+      return "<button type='button' class='ghost' data-besar='" + esc(VIDEO + p) + "' data-ket='Cek tampilan " + esc(c.kode) + " v" + esc(v.versi) + " lembar " + (i + 1) + "'>cek " + (i + 1) + "</button>";
+    }).join(" ");
+    return "<div class='video'><video controls preload='metadata' playsinline src='" + esc(VIDEO + v.path) + "'></video>" +
+      "<p class='papan-ket'>Video versi " + esc(v.versi) + " · " + esc(Math.round(v.durasi || 0)) + " detik · suara " + esc(v.suara || "") +
+      (v.catatan_revisi ? " · revisi: " + esc(v.catatan_revisi) : "") + "</p><div class='cek'>" + cek + "</div></div>";
+  }
+
+  function kartuUsulan(c) {
+    var u = c.usulan || {};
+    return "<article class='cerita usulan' id='" + esc(c.kode) + "'><div class='atas'><span class='kode'>" + esc(c.kode) + " · usulan " +
+      esc(u.urut || "") + " · " + esc(c.batch_usulan || "") + "</span>" + pil(c.status) + "</div>" +
+      "<h3>" + esc(c.judul) + "</h3>" +
+      "<p class='premis'><b>Pola:</b> " + esc(u.pola || "-") + "<br><b>Kiasan:</b> " + esc(u.kiasan || "-") + "<br><b>Dua sisi:</b> " + esc(u.sisi || "-") + "</p>" +
+      "<div class='rinci'><span>skor " + esc(u.skor) + "</span><span>" + esc(u.penerbit || "") + "</span>" +
+      (u.link ? "<span><a href='" + esc(u.link) + "' target='_blank' rel='noopener'>berita</a></span>" : "") +
+      (c.alasan_status ? "<span>" + esc(c.alasan_status) + "</span>" : "") + "</div></article>";
+  }
+
   function kartu(c) {
     var ref = {};
     (c.referensi || []).forEach(function (x) { ref[x.n] = x; });
@@ -287,6 +322,7 @@
       "<div class='rinci'><span>Kiasan: " + esc(c.kiasan_inti) + "</span><span>" + esc(c.jumlah_kata) + " kata · sekitar " + esc(c.durasi_perkiraan) + " detik</span><span>" +
       esc((c.jenis || "") + (c.pilar ? " · " + c.pilar : "")) + "</span>" + (c.alasan_status ? "<span>" + esc(c.alasan_status) + "</span>" : "") + "</div>" +
       (c.catatan_revisi ? "<p class='ket'>Catatan revisi pemilik: " + esc(c.catatan_revisi) + "</p>" : "") +
+      blokVideo(c) +
       storyboard(c) +
       "<ol class='naskah'>" + naskah + "</ol>" +
       "<details><summary>Papan adegan</summary><div class='tabel'><table><thead><tr><th>Frasa</th><th>Adegan</th><th>Kamera</th><th>Kuning</th><th>Gerak</th></tr></thead><tbody>" + papan + "</tbody></table></div></details>" +
@@ -305,21 +341,24 @@
   }
 
   function gambarCerita(rows) {
-    el("draft").innerHTML = rows.length ? rows.map(kartu).join("") : "<div class='kosong'>Belum ada cerita. Cerita pertama ditulis sesudah triase pagi.</div>";
-    var video = rows.filter(function (c) { return ["setuju", "dirender", "terbit"].indexOf(c.status) >= 0; });
-    el("video").querySelector("tbody").innerHTML = video.length ? video.map(function (c) {
-      return "<tr><td class='kecil'><a href='#" + esc(c.kode) + "'>" + esc(c.kode) + "</a></td><td class='kecil'>" + tgl(c.tanggal) + "</td><td>" + esc(c.judul) +
-        "</td><td class='angka'>" + esc(c.durasi_perkiraan) + " s</td><td>" + (c.status === "setuju" ? "<span class='pil dikirim'>menunggu render studio</span>" : pil(c.status)) + "</td></tr>";
-    }).join("") : "<tr><td colspan='5' class='state'>belum ada naskah yang disetujui</td></tr>";
+    var cerita = rows.filter(BERNASKAH);
+    var usulan = rows.filter(function (c) { return ["usulan", "lewat"].indexOf(c.status) >= 0 || (c.status === "dipilih"); });
+    el("usulan").innerHTML = usulan.length ? usulan.map(kartuUsulan).join("") : "<div class='kosong'>Belum ada usulan topik. Tiga usulan dikirim tiap pagi sesudah triase.</div>";
+    el("draft").innerHTML = cerita.length ? cerita.map(kartu).join("") : "<div class='kosong'>Belum ada storyboard. Naskah dan storyboard dibuat sesudah satu usulan dipilih.</div>";
+    var video = rows.filter(function (c) { return c.video && c.video.path || c.status === "setuju"; });
+    el("video").innerHTML = video.length ? video.map(function (c) {
+      return "<article class='cerita'><div class='atas'><span class='kode'><a href='#" + esc(c.kode) + "'>" + esc(c.kode) + "</a> · " + tgl(c.tanggal) + "</span>" + pil(c.status) + "</div>" +
+        "<h3>" + esc(c.judul) + "</h3>" + (blokVideo(c) || "<p class='papan-ket'>Video sedang dibuat.</p>") + "</article>";
+    }).join("") : "<div class='kosong'>Belum ada video. Video dibuat sesudah storyboard disetujui.</div>";
     el("konfirmasi").querySelector("tbody").innerHTML = rows.length ? rows.map(function (c) {
       return "<tr><td class='kecil'><a href='#" + esc(c.kode) + "'>" + esc(c.kode) + "</a></td><td>" + esc(c.judul) + "</td><td>" + pil(c.status) + "</td><td class='angka'>" + esc(c.putaran) +
         "</td><td class='kecil'>" + tgl(c.dikirim_wib) + "</td><td class='kecil'>" + tgl(c.diputus_wib) + "</td><td class='kecil' style='white-space:normal'>" + esc(c.alasan_status || "") + "</td></tr>";
     }).join("") : "<tr><td colspan='7' class='state'>belum ada</td></tr>";
     var n = function (st) { return rows.filter(function (c) { return st.indexOf(c.status) >= 0; }).length; };
-    el("n-draft").textContent = rows.length;
-    el("n-video").textContent = n(["setuju"]);
-    el("n-konfirmasi").textContent = n(["dikirim", "revisi"]);
-    el("n-terbit").textContent = n(["terbit"]);
+    el("n-draft").textContent = cerita.length;
+    el("n-video").textContent = video.length;
+    el("n-konfirmasi").textContent = n(["usulan", "dikirim", "video_dikirim"]);
+    el("n-terbit").textContent = n(["siap_terbit", "terbit"]);
     ["n-draft", "n-video", "n-konfirmasi", "n-terbit"].forEach(function (id) { el(id).parentNode.classList.toggle("hidup", +el(id).textContent > 0); });
     if (location.hash && el(location.hash.slice(1))) { pilihTab("draft"); el(location.hash.slice(1)).scrollIntoView(); }
   }
@@ -339,8 +378,8 @@
     });
     ambil("gb_cerita_terbaru?select=*&limit=40").then(gambarCerita).catch(function (e) {
       var p = "<div class='state err'>" + esc(galat(e, "gb_cerita_terbaru")) + "</div>";
-      el("draft").innerHTML = p;
-      ["video", "konfirmasi"].forEach(function (id) { el(id).querySelector("tbody").innerHTML = "<tr><td colspan='7' class='state err'>" + esc(galat(e, "gb_cerita_terbaru")) + "</td></tr>"; });
+      ["usulan", "draft", "video"].forEach(function (id) { el(id).innerHTML = p; });
+      el("konfirmasi").querySelector("tbody").innerHTML = "<tr><td colspan='7' class='state err'>" + esc(galat(e, "gb_cerita_terbaru")) + "</td></tr>";
     }).then(function () {
       el("diperbarui").textContent = "diperbarui " + new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
     });
