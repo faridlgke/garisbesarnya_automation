@@ -793,6 +793,17 @@
     var paragraf = String(cap.instagram || "").split(/\n\s*\n/).filter(Boolean).map(function (x) { return "<p>" + esc(x) + "</p>"; }).join("");
     var pagar = (pg.blokir || []).map(function (x) { return '<span class="pagar-b">⛔ ' + esc(x) + "</span>"; }).join("") + (pg.peringatan || []).map(function (x) { return '<span class="pagar-p">⚠ ' + esc(x) + "</span>"; }).join("");
     var papanTabel = (c.papan_adegan || []).map(function (a, i) { return "<tr><td>" + (i + 1) + "</td><td>" + esc((a.frasa || []).join(", ")) + "</td><td>" + esc(a.adegan) + "</td><td>" + esc(a.kamera) + "</td><td>" + esc(a.kuning) + "</td></tr>"; }).join("");
+    // Daftar shot (sejak 26 Oktober 2026): bahan video animasi, storyboard cuma gambaran
+    var nShot = 0;
+    var shotTabel = (c.papan_adegan || []).map(function (a, i) {
+      return (a.shot || []).map(function (s) {
+        nShot++;
+        var eks = s.ekspresi && typeof s.ekspresi === "object" ? Object.keys(s.ekspresi).map(function (k) { return k + " " + s.ekspresi[k]; }).join(", ") : "";
+        return '<tr><td class="num">' + nShot + "</td><td>" + (i + 1) + "</td><td>" + esc(s.kata || "") + '</td><td class="num">' + esc(s.durasi || "") + "</td><td>" + esc(s.bingkai || "") + " · " + esc(s.kamera || "") +
+          "</td><td>" + esc(s.transisi || "") + "</td><td>" + esc(s.aksi || "") + (eks ? '<br><span class="redup">' + esc(eks) + "</span>" : "") + (s.teks_adegan ? ' <span class="tag">' + esc(s.teks_adegan) + "</span>" : "") + "</td></tr>";
+      }).join("");
+    }).join("");
+    var pemeranDaftar = (c.pemeran || []).map(function (p) { return "<li><strong>" + esc(p.nama) + "</strong>: " + esc(p.rupa) + "</li>"; }).join("");
     return '<div class="rinci">' + (proses ? blokProgres(c.kode) : "") + (proses ? "" : spek) +
       '<section style="grid-column:1/-1"><h6>Storyboard</h6>' + isiStory + "</section>" +
       '<section class="kol-slide"><h6>Naskah <span class="redup" style="text-transform:none;letter-spacing:0">kata layar di kanan</span></h6>' + isiNaskah + "</section>" +
@@ -802,6 +813,9 @@
           '<div class="kotak"><h6>TikTok, Shorts, Threads</h6><p>' + esc(cap.tiktok || "") + "</p><p><strong>" + esc(yt.judul || "") + "</strong> " + esc(yt.deskripsi || "") + "</p><p>" + esc(cap.threads || "") + "</p></div>" +
           '<div class="kotak"><h6>Fakta dua sisi</h6><p>' + esc(f.isu || "") + "</p><p><strong>Klaim resmi</strong></p>" + daftarFakta(f.klaim_resmi, ref) + "<p><strong>Kritik atau pembanding</strong></p>" + daftarFakta(f.kritik, ref) +
           (f.belum_jelas ? "<p><strong>Belum jelas:</strong> " + esc(f.belum_jelas) + "</p>" : "") + "</div></section>" +
+          (pemeranDaftar ? '<section style="grid-column:1/-1"><h6>Pemeran tetap</h6><ul style="margin:0;padding-left:18px">' + pemeranDaftar + "</ul></section>" : "") +
+          (shotTabel ? '<section style="grid-column:1/-1"><h6>Daftar shot <span class="redup" style="text-transform:none;letter-spacing:0">' + nShot + " shot, bahan video animasi</span></h6>" +
+            '<div class="scroll"><table class="papan-tabel"><thead><tr><th class="num">#</th><th>Adegan</th><th>Kata</th><th class="num">Dtk</th><th>Bingkai · kamera</th><th>Masuk</th><th>Aksi</th></tr></thead><tbody>' + shotTabel + "</tbody></table></div></section>" : "") +
           '<section style="grid-column:1/-1"><h6>Papan adegan</h6><div class="scroll"><table class="papan-tabel"><thead><tr><th>#</th><th>Frasa</th><th>Adegan</th><th>Kamera</th><th>Kuning</th></tr></thead><tbody>' + papanTabel + "</tbody></table></div></section>") +
       '<footer class="kaki-rinci"><span>Sumber asli: <a class="tautan" href="' + esc(aman(c.link)) + '" target="_blank" rel="noopener noreferrer">' + esc(dekode(c.news_title) || c.penerbit || "") + "</a> (" + esc(c.penerbit || "") + ")</span>" +
       (c.catatan_revisi ? "<span>Catatan revisi pemilik: " + esc(c.catatan_revisi) + "</span>" : "") +
