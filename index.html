@@ -418,7 +418,7 @@
   var B = "&brand=eq." + BRAND;
   var TAHAP = ["bahan", "draf", "video", "konfirmasi", "terbit"];
   var STATUS_GB = {
-    usulan: ["biru", "usulan, menunggu dipilih"], lewat: ["", "tidak dipilih"], dipilih: ["warn", "sedang dibuat"],
+    usulan: ["biru", "usulan, menunggu dipilih"], lewat: ["", "tidak dipilih"], dipilih: ["warn", "sedang dibuat"], pilih_naskah: ["biru", "tiga draf menunggu dipilih"],
     draf: ["warn", "menunggu kirim"], dikirim: ["biru", "storyboard menunggu balasan"], revisi: ["warn", "sedang direvisi"],
     setuju: ["warn", "video sedang dibuat"], video_dikirim: ["biru", "video menunggu balasan"], video_revisi: ["warn", "video sedang diperbaiki"],
     siap_terbit: ["ok", "siap terbit"], terbit: ["ok", "terbit"], tolak: ["bad", "dihentikan"], dirender: ["ok", "dirender"]
@@ -505,7 +505,7 @@
     var draf = rows.filter(function (c) { return c.naskah && c.naskah.length || ["dipilih", "revisi"].indexOf(c.status) >= 0; }).length;
     var usulanTunggu = n(["usulan"]);
     var video = rows.filter(function (c) { return c.video && c.video.path || ["setuju", "video_revisi"].indexOf(c.status) >= 0; }).length;
-    var tunggu = n(["usulan", "dikirim", "video_dikirim"]);
+    var tunggu = n(["usulan", "pilih_naskah", "dikirim", "video_dikirim"]);
     var terbit = n(["siap_terbit", "terbit"]);
     if (CORONG.bahan != null) {
       el("c1").textContent = id_(CORONG.bahan);
@@ -777,7 +777,32 @@
     if (!isi || !isi.length) return "<p class=\"redup\">(kosong)</p>";
     return "<ul style=\"margin:0;padding-left:18px\">" + isi.map(function (k) { var x = ref[k.sumber]; return "<li>" + esc(k.isi) + (x ? ' <span class="redup">[' + esc(k.sumber) + " " + esc(x.penerbit) + "]</span>" : "") + "</li>"; }).join("") + "</ul>";
   }
+  // Tiga draf naskah (rantai GPT, sejak 26 Oktober 2026 malam): pemilik memilih lewat ACC <kode> A/B/C
+  function rinciDraf(c) {
+    var dn = c.draf_naskah || {};
+    var KRIT = ["kail", "kejelasan_kiasan", "eskalasi", "pembalik_penutup", "narasi_melengkapi_gambar", "bisa_digambar", "tahan_bantahan"];
+    var kolom = (dn.draf || []).map(function (d) {
+      var n = d.naskah || {}, v = d.nilai || {}, t = d.tebakan || {}, k = d.konsep || {};
+      var angka = KRIT.map(function (x) { return v[x]; }).filter(function (x) { return x != null; });
+      var isi = (n.frasa || []).map(function (f) {
+        var dlg = f.pembicara && f.pembicara !== "narator";
+        return "<li>" + (dlg ? "“" : "") + esc(f.teks) + (dlg ? "”" : "") + ' <span class="redup">[' + esc(f.tag) + "]</span></li>";
+      }).join("");
+      return '<section class="kotak"><h6>Draf ' + esc(d.label) + " · " + esc((k.teknik_satir || "").replace(/_/g, " ")) + "</h6>" +
+        "<p><strong>" + esc(n.judul) + "</strong></p><p>Kiasan: " + esc(n.kiasan_inti) + "</p>" +
+        '<p class="redup">' + esc(d.jumlah_kata) + " kata · nilai terendah " + (angka.length ? Math.min.apply(null, angka) : "–") +
+        " dari 5 · penebak buta: " + esc(t.isu_yang_disindir || "–") + "</p>" +
+        '<ol style="margin:6px 0 0;padding-left:18px">' + isi + "</ol>" +
+        (d.pagar && !d.pagar.lolos ? '<p class="pagar-b">⛔ ' + esc((d.pagar.blokir || []).join("; ")) + "</p>" : "") + "</section>";
+    }).join("");
+    return '<div class="rinci"><section style="grid-column:1/-1"><h6>Tiga draf naskah <span class="redup" style="text-transform:none;letter-spacing:0">balas ACC ' +
+      esc(c.kode) + " A, B, atau C di WhatsApp</span></h6>" +
+      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px">' + (kolom || '<p class="redup">Draf belum ada.</p>') + "</div></section>" +
+      '<footer class="kaki-rinci"><span>Sumber asli: <a class="tautan" href="' + esc(aman(c.link)) + '" target="_blank" rel="noopener noreferrer">' +
+      esc(dekode(c.news_title) || c.penerbit || "") + "</a> (" + esc(c.penerbit || "") + ")</span></footer></div>";
+  }
   function rinciCerita(c) {
+    if (c.status === "pilih_naskah") return rinciDraf(c);
     var proses = ["dipilih", "revisi"].indexOf(c.status) >= 0;
     var p = c.progres || {};
     var menulis = proses && (!p.panel || /naskah/.test(p.langkah || ""));
@@ -789,7 +814,7 @@
       "<div><h6>Kiasan</h6><p>" + esc(c.kiasan_inti || (c.usulan || {}).kiasan || "–") + "</p><span>" + esc(c.premis || "") + "</span></div></div>";
     var isiStory = proses ? '<div class="papan" data-papan="' + esc(c.kode) + '" data-sidik="' + esc(sidikPapan(p)) + '">' + isiPapanProses(p) + "</div>"
       : '<div class="papan">' + storyboardJadi(c) + "</div>";
-    var isiNaskah = menulis ? '<div class="kerangka"><div class="kilau" style="width:92%"></div><div class="kilau" style="width:78%"></div><div class="kilau" style="width:86%"></div><div class="kilau" style="width:64%"></div><span>GPT sedang menulis naskah dari berita sumber dan pembandingnya. Biasanya sekitar satu menit.</span></div>' : naskahDaftar(c);
+    var isiNaskah = menulis ? '<div class="kerangka"><div class="kilau" style="width:92%"></div><div class="kilau" style="width:78%"></div><div class="kilau" style="width:86%"></div><div class="kilau" style="width:64%"></div><span>GPT sedang menulis enam konsep, menguji kejelasannya lewat penebak buta, menilai, lalu menulis tiga draf naskah. Biasanya lima sampai sepuluh menit.</span></div>' : naskahDaftar(c);
     var paragraf = String(cap.instagram || "").split(/\n\s*\n/).filter(Boolean).map(function (x) { return "<p>" + esc(x) + "</p>"; }).join("");
     var pagar = (pg.blokir || []).map(function (x) { return '<span class="pagar-b">⛔ ' + esc(x) + "</span>"; }).join("") + (pg.peringatan || []).map(function (x) { return '<span class="pagar-p">⚠ ' + esc(x) + "</span>"; }).join("");
     var papanTabel = (c.papan_adegan || []).map(function (a, i) { return "<tr><td>" + (i + 1) + "</td><td>" + esc((a.frasa || []).join(", ")) + "</td><td>" + esc(a.adegan) + "</td><td>" + esc(a.kamera) + "</td><td>" + esc(a.kuning) + "</td></tr>"; }).join("");
@@ -824,7 +849,7 @@
   }
   function gambarDraf(rows) {
     var tb = document.querySelector("#draf tbody");
-    rows = rows.filter(function (c) { return c.naskah && c.naskah.length || ["dipilih", "revisi"].indexOf(c.status) >= 0; });
+    rows = rows.filter(function (c) { return c.naskah && c.naskah.length || ["dipilih", "revisi", "pilih_naskah"].indexOf(c.status) >= 0; });
     if (!rows.length) { tb.innerHTML = '<tr><td colspan="5" class="state">Belum ada storyboard. Naskah dan storyboard dibuat sesudah satu usulan dipilih.</td></tr>'; return; }
     tb.innerHTML = rows.map(function (c) {
       var proses = ["dipilih", "revisi"].indexOf(c.status) >= 0;
@@ -981,7 +1006,7 @@
   });
 
   // ------------------------------------------------------------- konfirmasi dan arahan
-  var GERBANG = { usulan: "1 · usulan topik", dikirim: "2 · storyboard dan naskah", video_dikirim: "3 · video" };
+  var GERBANG = { usulan: "1 · usulan topik", pilih_naskah: "1b · pilih naskah A/B/C", dikirim: "2 · storyboard dan naskah", video_dikirim: "3 · video" };
   function gambarKonfirmasi(rows) {
     var tb = document.querySelector("#konfirmasi tbody");
     rows = rows.filter(function (c) { return GERBANG[c.status]; });
