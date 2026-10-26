@@ -117,6 +117,48 @@
   .progres.galat { border-color: var(--bad); }
   .progres.galat .isi { background: var(--bad); }
   .progres.beres .isi { background: var(--ok); }
+  .progres .tahap { display: flex; gap: 4px 18px; flex-wrap: wrap; font-size: 0.8rem; color: var(--ink-3); margin-top: 8px; }
+  .progres .tahap:empty { display: none; }
+  .t-beres { color: var(--ok); }
+  .t-jalan { color: var(--kuning); }
+  .cerita.proses { border-color: var(--kuning); }
+  .sub-kartu { margin: 18px 0 4px; font-family: var(--judul); font-weight: 400; font-size: 1rem; }
+  @keyframes kilau { 0% { background-position: -300px 0; } 100% { background-position: 300px 0; } }
+  @keyframes muncul { from { opacity: 0; transform: scale(.98); } to { opacity: 1; transform: none; } }
+  @keyframes gelombang { 0%, 100% { transform: scaleY(.25); } 50% { transform: scaleY(1); } }
+  .kilau { background: linear-gradient(90deg, var(--panel) 0px, var(--rule-2) 120px, var(--panel) 240px); background-size: 600px 100%; animation: kilau 1.4s linear infinite; }
+  .muncul { animation: muncul .5s ease-out; }
+  .kotak { aspect-ratio: 2 / 3; border-radius: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; font-size: 0.8rem; color: var(--ink-3); position: relative; overflow: hidden; }
+  .kotak.antre { border: 1px dashed var(--rule-2); }
+  .kotak.gagal { border: 1px solid var(--bad); color: var(--bad); }
+  .kotak.digambar { border: 1px solid var(--kuning); }
+  .kotak .isi-kotak { position: absolute; left: 0; bottom: 0; width: 100%; height: 0; background: rgba(245, 197, 24, 0.12); transition: height .45s linear; }
+  .kotak .persen-kotak { position: relative; font-family: var(--judul); font-weight: 400; font-size: 1.7rem; color: var(--kuning); }
+  .kotak span { position: relative; }
+  .kerangka { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+  .kerangka div { height: 13px; border-radius: 4px; }
+  .kerangka span { font-size: 0.82rem; color: var(--ink-2); }
+  .video-proses { display: flex; gap: 28px; align-items: flex-start; flex-wrap: wrap; margin-top: 12px; }
+  .video-proses .kanan { flex: 1 1 320px; min-width: 0; }
+  .pemutar { width: 260px; max-width: 100%; aspect-ratio: 9 / 16; border: 1px solid var(--kuning); border-radius: 6px; background: #000; position: relative; overflow: hidden; }
+  .pemutar .pratinjau { width: 100%; height: 100%; object-fit: cover; opacity: .4; display: block; }
+  .pemutar .gelombang { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; gap: 6px; }
+  .pemutar .gelombang i { width: 6px; height: 56px; background: #F5C518; border-radius: 3px; animation: gelombang 1s ease-in-out infinite; }
+  .pemutar .gelombang i:nth-child(2) { animation-delay: .15s; } .pemutar .gelombang i:nth-child(3) { animation-delay: .3s; }
+  .pemutar .gelombang i:nth-child(4) { animation-delay: .45s; } .pemutar .gelombang i:nth-child(5) { animation-delay: .6s; } .pemutar .gelombang i:nth-child(6) { animation-delay: .75s; }
+  .pemutar .tumpang { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 22px; color: #EDE6D6; font-size: 0.8rem; text-align: center; }
+  .pemutar .persen-besar { font-family: var(--judul); font-weight: 400; font-size: 3rem; line-height: 1; color: #F5C518; }
+  .pemutar .garis-render { position: absolute; left: 0; bottom: 0; height: 4px; width: 0; background: #F5C518; transition: width .45s linear; }
+  .langkah-video { list-style: none; margin: 12px 0 0; padding: 0; border: 1px solid var(--rule); border-radius: 6px; }
+  .langkah-video li { display: grid; grid-template-columns: 22px 1fr 110px 44px; gap: 10px; align-items: center; padding: 11px 14px; border-bottom: 1px solid var(--rule); color: var(--ink-3); font-size: 0.88rem; }
+  .langkah-video li:last-child { border-bottom: 0; }
+  .langkah-video li.t-jalan, .langkah-video li.t-beres { color: var(--ink); }
+  .langkah-video li.t-beres .tanda { color: var(--ok); } .langkah-video li.t-jalan .tanda { color: var(--kuning); }
+  .langkah-video .nama small { display: block; font-size: 0.74rem; color: var(--ink-3); }
+  .langkah-video .bilah.kecil { height: 5px; border-radius: 999px; background: var(--rule); overflow: hidden; display: block; }
+  .langkah-video .bilah.kecil .isi { display: block; height: 100%; width: 0; background: var(--kuning); transition: width .45s linear; }
+  .langkah-video li.t-beres .bilah.kecil .isi { background: var(--ok); }
+  .langkah-video .angka-tahap { font-family: var(--mono); font-size: 0.8rem; text-align: right; }
   .video { margin: 14px 0 6px; }
   .video video { width: 100%; max-width: 300px; aspect-ratio: 9 / 16; background: #000; border: 1px solid var(--rule); border-radius: 4px; display: block; }
   .video .cek { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
@@ -314,28 +356,144 @@
     detik = Math.max(0, Math.round(detik));
     return Math.floor(detik / 60) + ":" + ("0" + (detik % 60)).slice(-2);
   }
+  // Bilah total, sama untuk storyboard dan video
   function blokProgres(c) {
     var p = c.progres;
-    var segar = p && p.selesai && (Date.now() - new Date(p.diperbarui).getTime() < 120000);
-    if (!p || (!(PROSES.indexOf(c.status) >= 0) && !segar)) return "";
+    if (!p) return "";
     progresAktif[c.kode] = p;
     return "<div class='progres' data-progres='" + esc(c.kode) + "'><div class='baris'><span class='langkah'></span><b class='angka'></b></div>" +
-      "<div class='bilah'><div class='isi'></div></div><div class='waktu'></div></div>";
+      "<div class='bilah'><div class='isi'></div></div><div class='tahap'></div><div class='waktu'></div></div>";
   }
+
+  // Tahap untuk baris ✓ ● ○. Rentang persen sama dengan gb/gerbang.py dan gb/video.py.
+  var TAHAP_CERITA = [["naskah", 3, 40], ["storyboard", 40, 92], ["kirim WhatsApp", 92, 100]];
+  var TAHAP_VIDEO = [["Membacakan suara", 25, 45, "ElevenLabs · perkiraan waktu"], ["Merender video", 45, 85, "panel bergerak + kata layar · per bingkai nyata"],
+    ["Lembar cek tampilan", 85, 90, "bingkai rata dan puncak gerak"], ["Mengunggah video", 90, 96, "ke gb-video"], ["Mengirim ke WhatsApp", 96, 100, "video, lembar cek, perintah"]];
+  function bagianTahap(persen, a, b) { return Math.max(0, Math.min(1, (persen - a) / (b - a))); }
+
+  // Kotak panel storyboard selama dikerjakan: antre, digambar (persen menurut
+  // lama biasanya, OpenAI tidak memberi kabar di tengah), jadi (gambar, bisa dibuka).
+  function kotakPanel(p, kode, perkiraan) {
+    var cap = "<figcaption><b>" + esc(p.kata || "") + "</b>" + esc(p.n) + " · frasa " + esc((p.frasa || []).join(", ")) + " · " + esc(p.kamera || "") + "</figcaption>";
+    if (p.status === "jadi" && p.path) {
+      var src = GAMBAR + p.path;
+      return "<figure class='muncul'><button type='button' data-besar='" + esc(src) + "' data-ket='Panel " + esc(p.n) + "' aria-label='Buka panel " + esc(p.n) + "'><img src='" + esc(src) + "' alt='Panel " + esc(p.n) + "'></button>" + cap + "</figure>";
+    }
+    if (p.status === "digambar") {
+      return "<figure><div class='kotak digambar kilau' data-mulai='" + esc(p.mulai || "") + "' data-perkiraan='" + esc(perkiraan) + "'><div class='isi-kotak'></div>" +
+        "<b class='persen-kotak'>0%</b><span>menggambar · ± " + esc(perkiraan) + " dtk</span></div>" + cap + "</figure>";
+    }
+    if (p.status === "gagal") return "<figure><div class='kotak gagal'>gagal digambar</div>" + cap + "</figure>";
+    return "<figure><div class='kotak antre'>antre</div>" + cap + "</figure>";
+  }
+  function isiPapanProses(c) {
+    var p = c.progres || {};
+    if (!p.panel || !p.panel.length) return "<p class='papan-ket'>Storyboard digambar sesudah naskah jadi.</p>";
+    return p.panel.map(function (x) { return kotakPanel(x, c.kode, p.perkiraan_panel_detik || 13); }).join("");
+  }
+  function sidikPapan(p) { return (p && p.panel || []).map(function (x) { return x.status; }).join(","); }
+
+  // Kartu Draft untuk usulan yang di-ACC dan storyboard yang direvisi
+  function kartuProses(c) {
+    var p = c.progres || {};
+    var menulis = !p.panel || /naskah/.test(p.langkah || "");
+    var u = c.usulan || {};
+    return "<article class='cerita proses' id='" + esc(c.kode) + "'>" +
+      "<div class='atas'><span class='kode'>" + esc(c.kode) + " · " + tgl(c.tanggal) + (c.status === "revisi" ? " · revisi ke-" + c.putaran : (u.urut ? " · dipilih dari usulan " + esc(u.urut) : "")) + "</span>" + pil(c.status) + "</div>" +
+      "<h3>" + esc(menulis && c.status === "dipilih" ? c.judul : (c.judul || "")) + "</h3>" +
+      (c.catatan_revisi && c.status === "revisi" ? "<p class='ket'>Catatan revisi pemilik: " + esc(c.catatan_revisi) + "</p>" : "") +
+      blokProgres(c) +
+      "<h4 class='sub-kartu'>Storyboard</h4><div class='papan' data-papan='" + esc(c.kode) + "' data-sidik='" + esc(sidikPapan(p)) + "'>" + isiPapanProses(c) + "</div>" +
+      "<h4 class='sub-kartu'>Naskah</h4>" +
+      (menulis ? "<div class='kerangka'><div class='kilau' style='width:92%'></div><div class='kilau' style='width:78%'></div><div class='kilau' style='width:86%'></div><div class='kilau' style='width:64%'></div>" +
+        "<span>GPT sedang menulis naskah dari berita sumber dan pembandingnya. Biasanya sekitar satu menit.</span></div>"
+        : "<ol class='naskah'>" + (c.naskah || []).map(function (x) { return "<li><span>" + esc(x.frasa) + "</span><span class='kata'>" + esc(x.kata_layar) + "</span></li>"; }).join("") + "</ol>") +
+      "</article>";
+  }
+
+  // Kartu Desain/Video selama video dibuat: pemutar dengan pratinjau bingkai
+  function kartuVideoProses(c) {
+    var p = c.progres || {};
+    progresAktif[c.kode] = p;
+    var langkah = TAHAP_VIDEO.map(function (s) {
+      return "<li data-tahap='" + esc(s[1]) + "-" + esc(s[2]) + "'><span class='tanda'>○</span><span class='nama'>" + esc(s[0]) + "<small>" + esc(s[3]) + "</small></span>" +
+        "<span class='bilah kecil'><span class='isi'></span></span><span class='angka-tahap'>0%</span></li>";
+    }).join("");
+    return "<article class='cerita proses' id='" + esc(c.kode) + "-video'><div class='atas'><span class='kode'><a href='#" + esc(c.kode) + "'>" + esc(c.kode) + "</a> · video versi " +
+      esc(((c.video || {}).versi || 0) + 1) + "</span>" + pil(c.status) + "</div><h3>" + esc(c.judul) + "</h3>" +
+      "<div class='video-proses'><div class='pemutar' data-pemutar='" + esc(c.kode) + "'><img class='pratinjau' alt='Bingkai terakhir yang dirender' hidden>" +
+      "<div class='gelombang' aria-hidden='true'><i></i><i></i><i></i><i></i><i></i><i></i></div>" +
+      "<div class='tumpang'><b class='persen-besar'>0%</b><span class='ket-pemutar'></span></div><div class='garis-render'></div></div>" +
+      "<div class='kanan'>" + blokProgres(c) + "<ol class='langkah-video' data-langkah-video='" + esc(c.kode) + "'>" + langkah + "</ol>" +
+      "<p class='papan-ket'>Suara tidak bisa diintip dari dalam, jadi bilahnya maju menurut lama biasanya dan tertahan sampai suara benar-benar selesai. Render dihitung dari bingkai yang sudah jadi.</p></div></div></article>";
+  }
+
   function segarkanProgres() {
     Object.keys(progresAktif).forEach(function (kode) {
       var p = progresAktif[kode];
+      if (!p) return;
+      var persen = p.galat ? (p.persen || 0) : hitungPersen(p);
       document.querySelectorAll("[data-progres='" + kode + "']").forEach(function (elm) {
-        var persen = p.galat ? (p.persen || 0) : hitungPersen(p);
         elm.querySelector(".isi").style.width = persen + "%";
         elm.querySelector(".angka").textContent = persen + "%";
-        elm.querySelector(".langkah").textContent = p.galat ? "gagal: " + p.galat : p.langkah;
+        var teks = p.galat ? "gagal: " + p.galat : p.langkah;
+        if (p.panel && /storyboard/.test(p.langkah || "")) {
+          var jadi = p.panel.filter(function (x) { return x.status === "jadi"; }).length;
+          teks += " · " + jadi + " dari " + p.panel.length + " panel jadi";
+        }
+        elm.querySelector(".langkah").textContent = teks;
+        var tahapEl = elm.querySelector(".tahap");
+        if (tahapEl && /cerita|revisi/.test(p.tugas || "")) {
+          tahapEl.innerHTML = TAHAP_CERITA.map(function (s) {
+            var b = bagianTahap(persen, s[1], s[2]);
+            var tanda = b >= 1 ? "✓" : (b > 0 ? "●" : "○");
+            return "<span class='" + (b >= 1 ? "t-beres" : (b > 0 ? "t-jalan" : "")) + "'>" + tanda + " " + s[0] + "</span>";
+          }).join("");
+        }
         var lewat = ((p.selesai ? new Date(p.diperbarui).getTime() : Date.now()) - new Date(p.mulai).getTime()) / 1000;
         var basi = !p.selesai && (Date.now() - new Date(p.diperbarui).getTime() > 180000);
         elm.querySelector(".waktu").textContent = (p.selesai ? "selesai dalam " : "berjalan ") + durasiTeks(lewat) +
           (basi ? " · tidak ada kabar dari laci sejak " + durasiTeks((Date.now() - new Date(p.diperbarui).getTime()) / 1000) + " lalu" : "");
         elm.classList.toggle("galat", !!p.galat);
         elm.classList.toggle("beres", !!p.selesai && !p.galat);
+      });
+      // kotak panel: dibangun ulang hanya kalau status salah satu panel berganti
+      document.querySelectorAll("[data-papan='" + kode + "']").forEach(function (wadah) {
+        var sidik = sidikPapan(p);
+        if (wadah.getAttribute("data-sidik") !== sidik) {
+          wadah.setAttribute("data-sidik", sidik);
+          wadah.innerHTML = isiPapanProses({ kode: kode, progres: p });
+        }
+        wadah.querySelectorAll(".kotak.digambar").forEach(function (k) {
+          var m = new Date(k.getAttribute("data-mulai")).getTime();
+          var pk = Math.max(0, Math.min(99, Math.round((Date.now() - m) / 1000 / (+k.getAttribute("data-perkiraan") || 13) * 100)));
+          k.querySelector(".persen-kotak").textContent = pk + "%";
+          k.querySelector(".isi-kotak").style.height = pk + "%";
+        });
+      });
+      // pemutar video
+      document.querySelectorAll("[data-pemutar='" + kode + "']").forEach(function (pm) {
+        var img = pm.querySelector(".pratinjau");
+        if (p.pratinjau) {
+          var src = VIDEO + p.pratinjau + "?t=" + encodeURIComponent(p.pratinjau_at || "");
+          if (img.getAttribute("src") !== src) img.setAttribute("src", src);
+          img.hidden = false;
+        }
+        var suara = /suara/.test(p.langkah || "") && !p.selesai;
+        pm.querySelector(".gelombang").style.display = suara ? "flex" : "none";
+        pm.querySelector(".persen-besar").textContent = persen + "%";
+        var ket = p.galat ? "gagal" : (p.bingkai_dari && /render/.test(p.langkah || "") ?
+          "bingkai " + (p.bingkai_ke || 0).toLocaleString("id-ID") + " dari " + p.bingkai_dari.toLocaleString("id-ID") : p.langkah);
+        pm.querySelector(".ket-pemutar").textContent = ket;
+        pm.querySelector(".garis-render").style.width = persen + "%";
+      });
+      document.querySelectorAll("[data-langkah-video='" + kode + "'] li").forEach(function (li) {
+        var r = li.getAttribute("data-tahap").split("-").map(Number);
+        var b = bagianTahap(persen, r[0], r[1]);
+        li.className = b >= 1 ? "t-beres" : (b > 0 ? "t-jalan" : "");
+        li.querySelector(".tanda").textContent = b >= 1 ? "✓" : (b > 0 ? "●" : "○");
+        li.querySelector(".isi").style.width = Math.round(b * 100) + "%";
+        li.querySelector(".angka-tahap").textContent = Math.round(b * 100) + "%";
       });
     });
   }
@@ -346,11 +504,16 @@
   // Halaman digambar ulang penuh HANYA saat status berganti, supaya video
   // yang sedang diputar dan bagian yang dibuka tidak ter-reset.
   var statusDikenal = {};
+  var naskahDikenal = {};
   function pantau() {
     ambil("gb_cerita_terbaru?select=kode,status,progres&status=in.(" + PROSES.join(",") + ")").then(function (rows) {
       var berubah = false;
       rows.forEach(function (r) {
         if (statusDikenal[r.kode] !== r.status) berubah = true;
+        // naskah baru jadi (langkah pindah ke storyboard): gambar ulang supaya naskahnya muncul
+        var pg = r.progres || {};
+        var adaNaskah = !!(pg.panel && pg.panel.length);
+        if (adaNaskah && naskahDikenal[r.kode] === false) berubah = true;
         progresAktif[r.kode] = r.progres;
       });
       Object.keys(statusDikenal).forEach(function (k) {
@@ -377,7 +540,7 @@
     var u = c.usulan || {};
     return "<article class='cerita usulan' id='" + esc(c.kode) + "'><div class='atas'><span class='kode'>" + esc(c.kode) + " · usulan " +
       esc(u.urut || "") + " · " + esc(c.batch_usulan || "") + "</span>" + pil(c.status) + "</div>" +
-      "<h3>" + esc(c.judul) + "</h3>" + blokProgres(c) +
+      "<h3>" + esc(c.judul) + "</h3>" +
       "<p class='premis'><b>Pola:</b> " + esc(u.pola || "-") + "<br><b>Kiasan:</b> " + esc(u.kiasan || "-") + "<br><b>Dua sisi:</b> " + esc(u.sisi || "-") + "</p>" +
       "<div class='rinci'><span>skor " + esc(u.skor) + "</span><span>" + esc(u.penerbit || "") + "</span>" +
       (u.link ? "<span><a href='" + esc(u.link) + "' target='_blank' rel='noopener'>berita</a></span>" : "") +
@@ -401,7 +564,6 @@
       "<div class='rinci'><span>Kiasan: " + esc(c.kiasan_inti) + "</span><span>" + esc(c.jumlah_kata) + " kata · sekitar " + esc(c.durasi_perkiraan) + " detik</span><span>" +
       esc((c.jenis || "") + (c.pilar ? " · " + c.pilar : "")) + "</span>" + (c.alasan_status ? "<span>" + esc(c.alasan_status) + "</span>" : "") + "</div>" +
       (c.catatan_revisi ? "<p class='ket'>Catatan revisi pemilik: " + esc(c.catatan_revisi) + "</p>" : "") +
-      (["revisi"].indexOf(c.status) >= 0 ? blokProgres(c) : "") +
       blokVideo(c) +
       storyboard(c) +
       "<ol class='naskah'>" + naskah + "</ol>" +
@@ -423,16 +585,25 @@
   function gambarCerita(rows) {
     progresAktif = {};
     statusDikenal = {};
-    rows.forEach(function (c) { statusDikenal[c.kode] = c.status; });
-    var cerita = rows.filter(BERNASKAH);
-    var usulan = rows.filter(function (c) { return ["usulan", "lewat"].indexOf(c.status) >= 0 || (c.status === "dipilih"); });
+    naskahDikenal = {};
+    rows.forEach(function (c) {
+      statusDikenal[c.kode] = c.status;
+      var pg = c.progres || {};
+      if (["dipilih", "revisi"].indexOf(c.status) >= 0) naskahDikenal[c.kode] = !!(pg.panel && pg.panel.length);
+    });
+    var proses = rows.filter(function (c) { return ["dipilih", "revisi"].indexOf(c.status) >= 0; });
+    var cerita = rows.filter(function (c) { return BERNASKAH(c) && c.status !== "revisi"; });
+    var usulan = rows.filter(function (c) { return ["usulan", "lewat"].indexOf(c.status) >= 0; });
     el("usulan").innerHTML = usulan.length ? usulan.map(kartuUsulan).join("") : "<div class='kosong'>Belum ada usulan topik. Tiga usulan dikirim tiap pagi sesudah triase.</div>";
-    el("draft").innerHTML = cerita.length ? cerita.map(kartu).join("") : "<div class='kosong'>Belum ada storyboard. Naskah dan storyboard dibuat sesudah satu usulan dipilih.</div>";
+    el("draft").innerHTML = (proses.length || cerita.length) ? proses.map(kartuProses).join("") + cerita.map(kartu).join("")
+      : "<div class='kosong'>Belum ada storyboard. Naskah dan storyboard dibuat sesudah satu usulan dipilih.</div>";
     var video = rows.filter(function (c) { return c.video && c.video.path || c.status === "setuju" || c.status === "video_revisi"; });
     el("video").innerHTML = video.length ? video.map(function (c) {
+      if (["setuju", "video_revisi"].indexOf(c.status) >= 0 && c.progres && /video/.test(c.progres.tugas || "")) return kartuVideoProses(c);
       return "<article class='cerita'><div class='atas'><span class='kode'><a href='#" + esc(c.kode) + "'>" + esc(c.kode) + "</a> · " + tgl(c.tanggal) + "</span>" + pil(c.status) + "</div>" +
-        "<h3>" + esc(c.judul) + "</h3>" + blokProgres(c) + (blokVideo(c) || "") + "</article>";
+        "<h3>" + esc(c.judul) + "</h3>" + (blokVideo(c) || "<p class='papan-ket'>Video sedang disiapkan.</p>") + "</article>";
     }).join("") : "<div class='kosong'>Belum ada video. Video dibuat sesudah storyboard disetujui.</div>";
+    segarkanProgres();
     el("konfirmasi").querySelector("tbody").innerHTML = rows.length ? rows.map(function (c) {
       return "<tr><td class='kecil'><a href='#" + esc(c.kode) + "'>" + esc(c.kode) + "</a></td><td>" + esc(c.judul) + "</td><td>" + pil(c.status) + "</td><td class='angka'>" + esc(c.putaran) +
         "</td><td class='kecil'>" + tgl(c.dikirim_wib) + "</td><td class='kecil'>" + tgl(c.diputus_wib) + "</td><td class='kecil' style='white-space:normal'>" + esc(c.alasan_status || "") + "</td></tr>";
