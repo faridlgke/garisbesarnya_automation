@@ -175,6 +175,9 @@
     <h2>Konfirmasi WhatsApp</h2>
     <p class="ket">Balasan pemilik sama di tiap gerbang: ACC memilih atau menyetujui, REVISI memperbaiki sesuai catatan (paling banyak tiga kali per gerbang), GANTI meminta usulan topik lain, HENTIKAN membatalkan.</p>
     <div class="tabel"><table id="konfirmasi"><thead><tr><th>Kode</th><th>Judul</th><th>Status</th><th>Putaran</th><th>Dikirim</th><th>Diputus</th><th>Keterangan</th></tr></thead><tbody><tr><td colspan="7" class="state">memuat…</td></tr></tbody></table></div>
+    <h2>Arahan pemilik</h2>
+    <p class="ket">Masukan lewat WhatsApp dengan <code>ARAHAN &lt;teks&gt;</code>, tanpa kode cerita. Masukan gaya langsung berlaku mulai cerita berikutnya, masukan teknis antre sampai dikerjakan.</p>
+    <div class="tabel"><table id="arahan"><thead><tr><th>#</th><th>Status</th><th>Lingkup</th><th>Kata pemilik</th><th>Diterapkan sebagai</th><th>Diubah</th></tr></thead><tbody><tr><td colspan="6" class="state">memuat…</td></tr></tbody></table></div>
   </section>
 
   <section id="t-terbit" hidden>
@@ -375,6 +378,17 @@
     });
     ambil("rk_daftar_artikel?select=source,penerbit,news_title,published_time,link" + B + "&order=published_time.desc,masuk_wib.desc&limit=200").then(gambarBahan).catch(function (e) {
       el("bahan").querySelector("tbody").innerHTML = "<tr><td colspan='4' class='state err'>" + esc(galat(e, "rk_daftar_artikel")) + "</td></tr>";
+    });
+    ambil("gb_arahan_terbaru?select=*&limit=50").then(function (rows) {
+      var arti = { aktif: "berlaku", antre: "antre teknis", selesai: "selesai", dicabut: "dicabut" };
+      var kelas = { aktif: "setuju", antre: "dikirim", selesai: "setuju", dicabut: "tolak" };
+      el("arahan").querySelector("tbody").innerHTML = rows.length ? rows.map(function (r) {
+        return "<tr><td class='angka'>" + esc(r.nomor) + "</td><td><span class='pil " + kelas[r.status] + "'>" + esc(arti[r.status] || r.status) + "</span></td><td class='kecil'>" +
+          esc((r.lingkup || []).join(", ")) + "</td><td>" + esc(r.teks) + "</td><td class='kecil' style='white-space:normal'>" + esc(r.arahan || "") +
+          (r.catatan ? "<br><i>" + esc(r.catatan) + "</i>" : "") + "</td><td class='kecil'>" + tgl(r.diubah_wib) + "</td></tr>";
+      }).join("") : "<tr><td colspan='6' class='state'>belum ada arahan</td></tr>";
+    }).catch(function (e) {
+      el("arahan").querySelector("tbody").innerHTML = "<tr><td colspan='6' class='state err'>" + esc(galat(e, "gb_arahan_terbaru")).replace("sql/001_gb_cerita.sql", "sql/004_gb_arahan.sql") + "</td></tr>";
     });
     ambil("gb_cerita_terbaru?select=*&limit=40").then(gambarCerita).catch(function (e) {
       var p = "<div class='state err'>" + esc(galat(e, "gb_cerita_terbaru")) + "</div>";
