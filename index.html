@@ -498,6 +498,9 @@
     pilihTab(awal || "bahan", false);
   })();
 
+  // Cerita yang tidak ditampilkan di halaman (keputusan pemilik). 27 Oktober 2026: GBMVPZ ("jelek, gamau aku tampilkan").
+  var DISEMBUNYIKAN = ["GBMVPZ"];
+  var TANPA_SEMBUNYI = DISEMBUNYIKAN.length ? "&kode=not.in.(" + DISEMBUNYIKAN.join(",") + ")" : "";
   var CORONG = { bahan: null, baru: null, cerita: [] };
   function isiSungai() {
     var rows = CORONG.cerita;
@@ -739,7 +742,7 @@
     tombol.disabled = true; tombol.textContent = "Menyiapkan…";
     Promise.all([
       ambilSemua("rk_daftar_artikel?select=" + KOLOM_DAFTAR + "&order=published_time.desc,masuk_wib.desc" + saringanDaftar(), 20000),
-      ambil("gb_cerita_terbaru?select=*&limit=500").catch(function () { return []; })
+      ambil("gb_cerita_terbaru?select=*&limit=500" + TANPA_SEMBUNYI).catch(function () { return []; })
     ]).then(function (res) {
       var wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(res[0].map(function (r) {
@@ -1051,7 +1054,7 @@
       ambil("rk_pilihan_harian?select=*" + B + "&order=tanggal.desc,peringkat.asc&limit=40").then(gambarPilihan).catch(function (e) {
         document.querySelector("#pilihan tbody").innerHTML = '<tr><td colspan="6" class="state err">' + esc(pesanGalat(e, "rk_pilihan_harian", "sql/002")) + "</td></tr>";
       }),
-      ambil("gb_cerita_terbaru?select=*&limit=60").then(gambarCerita).catch(function (e) {
+      ambil("gb_cerita_terbaru?select=*&limit=60" + TANPA_SEMBUNYI).then(gambarCerita).catch(function (e) {
         var p = esc(pesanGalat(e, "gb_cerita_terbaru", "sql/001 sampai sql/005 garisbesarnya"));
         ["#draf tbody", "#usulan tbody", "#konfirmasi tbody"].forEach(function (s) { document.querySelector(s).innerHTML = '<tr><td colspan="5" class="state err">' + p + "</td></tr>"; });
         el("galeri").innerHTML = '<div class="state err">' + p + "</div>"; el("arsip").innerHTML = '<div class="state err">' + p + "</div>";
@@ -1070,7 +1073,7 @@
   // naskah baru jadi, supaya video yang diputar dan baris yang dibuka tidak ter-reset.
   var statusDikenal = {};
   function pantau() {
-    ambil("gb_cerita_terbaru?select=kode,status,progres&status=in.(" + PROSES.join(",") + ")").then(function (rows) {
+    ambil("gb_cerita_terbaru?select=kode,status,progres&status=in.(" + PROSES.join(",") + ")" + TANPA_SEMBUNYI).then(function (rows) {
       var berubah = false;
       rows.forEach(function (r) {
         if (statusDikenal[r.kode] !== r.status) berubah = true;
