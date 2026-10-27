@@ -214,8 +214,8 @@
   .tajuk .nama { font-family: "Archivo Black", var(--judul); font-weight: 400; color: var(--ink); }
   .tajuk .nama span { color: var(--kuning); }
   .tajuk { border-bottom-color: var(--ink); }
-  .sungai { grid-template-columns: repeat(5, minmax(0, 1fr)); }
-  .garis { margin-inline: calc(100% / 10); }
+  .sungai { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .garis { margin-inline: calc(100% / 12); }
   .st .ket b { color: var(--accent); font-weight: 600; }
   /* kemajuan kerja latar: bilah, kotak panel, pemutar */
   .progres { margin: 0 0 18px; padding: 14px 16px; border: 1px solid var(--rule-2); border-radius: 12px; background: var(--bg); grid-column: 1 / -1; }
@@ -302,8 +302,9 @@
     <div class="garis" aria-hidden="true"><span class="mati"></span><span class="hidup"></span></div>
     <button class="st" role="tab" data-tab="bahan" aria-selected="true"><span class="ang" id="c1">–</span><span class="nm">Bahan</span><span class="titik"></span><span class="ket" id="k1">scraping dan triase</span></button>
     <button class="st" role="tab" data-tab="draf"><span class="ang" id="c2">–</span><span class="nm">Draft</span><span class="titik"></span><span class="ket" id="k2">usulan, naskah, storyboard</span></button>
-    <button class="st" role="tab" data-tab="video"><span class="ang" id="c3">–</span><span class="nm">Desain/Video</span><span class="titik"></span><span class="ket" id="k3">animatic</span></button>
-    <button class="st" role="tab" data-tab="konfirmasi"><span class="ang" id="c4">–</span><span class="nm">Konfirmasi</span><span class="titik"></span><span class="ket" id="k4">gerbang WhatsApp</span></button>
+    <button class="st" role="tab" data-tab="konfirmasi_draf"><span class="ang" id="c6">–</span><span class="nm">Konfirmasi draft</span><span class="titik"></span><span class="ket" id="k6">topik, naskah, storyboard</span></button>
+    <button class="st" role="tab" data-tab="video"><span class="ang" id="c3">–</span><span class="nm">Desain/Video</span><span class="titik"></span><span class="ket" id="k3">video motion</span></button>
+    <button class="st" role="tab" data-tab="konfirmasi"><span class="ang" id="c4">–</span><span class="nm">Konfirmasi final</span><span class="titik"></span><span class="ket" id="k4">video di WhatsApp</span></button>
     <button class="st" role="tab" data-tab="terbit"><span class="ang" id="c5">–</span><span class="nm">Terbit</span><span class="titik"></span><span class="ket" id="k5">per platform</span></button>
   </nav>
 
@@ -369,9 +370,20 @@
     <div class="blok"><div class="galeri" id="galeri"><div class="state">memuat…</div></div></div>
   </section>
 
+  <section class="lembar" id="p-konfirmasi_draf" role="tabpanel" hidden>
+    <h2 id="j-konfirmasi-draf">Konfirmasi draft lewat WhatsApp</h2>
+    <p class="lead">Usulan topik, naskah, dan storyboard yang sudah sampai di WhatsApp pemilik dan belum dijawab. ACC memilih atau menyetujui, REVISI memperbaiki sesuai catatan (paling banyak tiga kali), GANTI meminta usulan lain, HENTIKAN membatalkan.</p>
+    <div class="blok">
+      <div class="scroll"><table id="konfirmasi_draf">
+        <thead><tr><th>Kode</th><th>Gerbang</th><th>Judul</th><th>Dikirim ke WA</th></tr></thead>
+        <tbody><tr><td colspan="4" class="state">memuat…</td></tr></tbody>
+      </table></div>
+    </div>
+  </section>
+
   <section class="lembar" id="p-konfirmasi" role="tabpanel" hidden>
-    <h2 id="j-konfirmasi">Konfirmasi lewat WhatsApp</h2>
-    <p class="lead">Yang sudah sampai di WhatsApp pemilik dan belum dijawab, di gerbang mana pun. Balasannya sama di tiap gerbang: ACC memilih atau menyetujui, REVISI memperbaiki sesuai catatan (paling banyak tiga kali), GANTI meminta usulan lain, HENTIKAN membatalkan.</p>
+    <h2 id="j-konfirmasi">Konfirmasi final lewat WhatsApp</h2>
+    <p class="lead">Video jadi yang sudah sampai di WhatsApp pemilik dan belum dijawab. ACC menerbitkan (kalau akun garisbesarnya sudah tersambung di Postiz), REVISI meneruskan catatan ke pembuatan video, HENTIKAN membatalkan.</p>
     <div class="blok">
       <div class="scroll"><table id="konfirmasi">
         <thead><tr><th>Kode</th><th>Gerbang</th><th>Judul</th><th>Dikirim ke WA</th></tr></thead>
@@ -416,7 +428,7 @@
   var PUBLIK = "https://khntypqoxcwntfnvewzy.supabase.co/storage/v1/object/public/";
   var KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtobnR5cHFveGN3bnRmbnZld3p5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE1NTc3NDEsImV4cCI6MjA4NzEzMzc0MX0.YvLe6hRXZSPvc_vamBa9TWc5RhHAqQ25tNKh-c7Nncc";
   var B = "&brand=eq." + BRAND;
-  var TAHAP = ["bahan", "draf", "video", "konfirmasi", "terbit"];
+  var TAHAP = ["bahan", "draf", "konfirmasi_draf", "video", "konfirmasi", "terbit"];
   var STATUS_GB = {
     usulan: ["biru", "usulan, menunggu dipilih"], lewat: ["", "tidak dipilih"], dipilih: ["warn", "sedang dibuat"], pilih_naskah: ["biru", "tiga draf menunggu dipilih"],
     draf: ["warn", "menunggu kirim"], dikirim: ["biru", "storyboard menunggu balasan"], revisi: ["warn", "sedang direvisi"],
@@ -501,6 +513,8 @@
   // Cerita yang tidak ditampilkan di halaman (keputusan pemilik). 27 Oktober 2026: GBMVPZ ("jelek, gamau aku tampilkan").
   var DISEMBUNYIKAN = ["GBMVPZ"];
   var TANPA_SEMBUNYI = DISEMBUNYIKAN.length ? "&kode=not.in.(" + DISEMBUNYIKAN.join(",") + ")" : "";
+  // sebutan kode tersembunyi di teks data (alasan usulan, catatan arahan) diganti "cerita lain"
+  function samarkan(t) { return DISEMBUNYIKAN.reduce(function (x, k) { return typeof x === "string" ? x.split(k).join("cerita lain") : x; }, t); }
   var CORONG = { bahan: null, baru: null, cerita: [] };
   function isiSungai() {
     var rows = CORONG.cerita;
@@ -508,7 +522,8 @@
     var draf = rows.filter(function (c) { return c.naskah && c.naskah.length || ["dipilih", "revisi"].indexOf(c.status) >= 0; }).length;
     var usulanTunggu = n(["usulan"]);
     var video = rows.filter(function (c) { return c.video && c.video.path || ["setuju", "video_revisi"].indexOf(c.status) >= 0; }).length;
-    var tunggu = n(["usulan", "pilih_naskah", "dikirim", "video_dikirim"]);
+    var tungguDraf = n(["usulan", "pilih_naskah", "dikirim"]);
+    var tunggu = rows.filter(function (c) { return c.status === "video_dikirim" && c.video && c.video.path; }).length;   // hanya yang videonya ada
     var terbit = n(["siap_terbit", "terbit"]);
     if (CORONG.bahan != null) {
       el("c1").textContent = id_(CORONG.bahan);
@@ -517,25 +532,28 @@
     }
     el("c2").textContent = id_(draf);
     el("c3").textContent = id_(video);
+    el("c6").textContent = id_(tungguDraf);
+    el("k6").innerHTML = '<span class="dot ' + (tungguDraf ? "warn" : "") + '"></span>' + (tungguDraf ? "menunggu balasan WA" : "tidak ada yang menunggu");
     el("c4").textContent = id_(tunggu);
-    el("k4").innerHTML = '<span class="dot ' + (tunggu ? "warn" : "") + '"></span>' + (tunggu ? "menunggu balasan WA" : "tidak ada yang menunggu");
+    el("k4").innerHTML = '<span class="dot ' + (tunggu ? "warn" : "") + '"></span>' + (tunggu ? "video menunggu balasan WA" : "tidak ada video yang menunggu");
     el("c5").textContent = id_(terbit);
     el("k5").innerHTML = '<span class="dot ' + (n(["terbit"]) ? "ok" : (terbit ? "warn" : "")) + '"></span>' + (terbit ? n(["siap_terbit"]) + " siap terbit, Postiz menyusul" : "belum ada yang tayang");
     el("j-draf").innerHTML = "<b>" + id_(draf) + "</b> storyboard dan naskah, <b>" + usulanTunggu + "</b> usulan topik menunggu dipilih";
-    el("j-video").innerHTML = "<b>" + id_(video) + "</b> video animatic";
-    el("j-konfirmasi").innerHTML = tunggu ? "<b>" + tunggu + "</b> menunggu balasan di WhatsApp" : "<b>Tidak ada</b> yang menunggu balasan";
+    el("j-video").innerHTML = "<b>" + id_(video) + "</b> video";
+    el("j-konfirmasi-draf").innerHTML = tungguDraf ? "<b>" + tungguDraf + "</b> draft menunggu balasan di WhatsApp" : "<b>Tidak ada</b> draft yang menunggu balasan";
+    el("j-konfirmasi").innerHTML = tunggu ? "<b>" + tunggu + "</b> video menunggu balasan di WhatsApp" : "<b>Tidak ada</b> video yang menunggu balasan";
     el("j-terbit").innerHTML = terbit ? "<b>" + terbit + "</b> video disetujui" : "<b>Belum ada</b> video yang disetujui";
     tulisKetProses();
-    var hidup = [CORONG.bahan > 0, draf + usulanTunggu > 0, video > 0, tunggu + n(["siap_terbit", "terbit", "tolak"]) > 0, terbit > 0];
+    var hidup = [CORONG.bahan > 0, draf + usulanTunggu > 0, tungguDraf + video > 0, video > 0, tunggu + terbit > 0, terbit > 0];
     var k = 0; while (k < hidup.length && hidup[k]) k++;
     // tahap yang sedang dikerjakan di laci yang berdenyut, kalau ada
     var aktif = -1;
     rows.forEach(function (c) {
       if (["dipilih", "revisi"].indexOf(c.status) >= 0) aktif = Math.max(aktif, 1);
-      if (["setuju", "video_revisi"].indexOf(c.status) >= 0) aktif = Math.max(aktif, 2);
+      if (["setuju", "video_revisi"].indexOf(c.status) >= 0) aktif = Math.max(aktif, 3);
     });
     stasiun.forEach(function (b, i) { b.classList.toggle("hidup", i < Math.max(k, aktif + 1)); b.classList.toggle("ujung", aktif >= 0 ? i === aktif : i === k - 1); });
-    document.querySelector(".sungai").style.setProperty("--hidup", String(Math.max(0, Math.max(k, aktif + 1) - 1) / 4));
+    document.querySelector(".sungai").style.setProperty("--hidup", String(Math.max(0, Math.max(k, aktif + 1) - 1) / 5));
   }
 
   // ------------------------------------------------------------- kemajuan kerja latar
@@ -1009,17 +1027,22 @@
   });
 
   // ------------------------------------------------------------- konfirmasi dan arahan
-  var GERBANG = { usulan: "1 · usulan topik", pilih_naskah: "1b · pilih naskah A/B/C", dikirim: "2 · storyboard dan naskah", video_dikirim: "3 · video" };
+  var GERBANG_DRAF = { usulan: "1 · usulan topik", pilih_naskah: "1b · pilih naskah A/B/C", dikirim: "2 · storyboard dan naskah" };
+  var GERBANG_FINAL = { video_dikirim: "3 · video" };
   function gambarKonfirmasi(rows) {
-    var tb = document.querySelector("#konfirmasi tbody");
-    rows = rows.filter(function (c) { return GERBANG[c.status]; });
-    if (!rows.length) { tb.innerHTML = '<tr><td colspan="4" class="state">Tidak ada yang menunggu balasan.</td></tr>'; return; }
+    isiKonfirmasi("#konfirmasi_draf tbody", GERBANG_DRAF, rows.filter(function (c) { return GERBANG_DRAF[c.status]; }), "Tidak ada draft yang menunggu balasan.");
+    isiKonfirmasi("#konfirmasi tbody", GERBANG_FINAL, rows.filter(function (c) { return GERBANG_FINAL[c.status] && c.video && c.video.path; }), "Tidak ada video yang menunggu balasan.");
+  }
+  function isiKonfirmasi(sel, GERBANG, rows, kosong) {
+    var tb = document.querySelector(sel);
+    if (!rows.length) { tb.innerHTML = '<tr><td colspan="4" class="state">' + kosong + '</td></tr>'; return; }
     tb.innerHTML = rows.map(function (c) {
       return '<tr><td class="mono">' + esc(c.kode) + '</td><td><span class="s warn">' + esc(GERBANG[c.status]) + '</span></td><td class="lebar">' + esc(c.status === "usulan" ? dekode(c.news_title) : c.judul) +
         '</td><td class="redup">' + esc(fmtPukul(c.dikirim_wib || c.dibuat_wib)) + "</td></tr>";
     }).join("");
   }
   function gambarArahan(rows) {
+    rows.forEach(function (r) { r.teks = samarkan(r.teks); r.arahan = samarkan(r.arahan); r.catatan = samarkan(r.catatan); });
     var tb = document.querySelector("#arahan tbody");
     var arti = { aktif: ["ok", "berlaku"], antre: ["warn", "antre teknis"], selesai: ["ok", "selesai"], dicabut: ["bad", "dicabut"] };
     if (!rows.length) { tb.innerHTML = '<tr><td colspan="5" class="state">Belum ada arahan.</td></tr>'; return; }
@@ -1033,7 +1056,7 @@
   function gambarCerita(rows) {
     CERITA = {};
     progresAktif = {};
-    rows.forEach(function (c) { CERITA[c.kode] = c; statusDikenal[c.kode] = c.status; });
+    rows.forEach(function (c) { c.alasan_status = samarkan(c.alasan_status); CERITA[c.kode] = c; statusDikenal[c.kode] = c.status; });
     CORONG.cerita = rows;
     gambarDraf(rows); gambarUsulan(rows); gambarGaleri(rows); gambarTerbit(rows); gambarKonfirmasi(rows);
     isiSungai();
@@ -1056,7 +1079,7 @@
       }),
       ambil("gb_cerita_terbaru?select=*&limit=60" + TANPA_SEMBUNYI).then(gambarCerita).catch(function (e) {
         var p = esc(pesanGalat(e, "gb_cerita_terbaru", "sql/001 sampai sql/005 garisbesarnya"));
-        ["#draf tbody", "#usulan tbody", "#konfirmasi tbody"].forEach(function (s) { document.querySelector(s).innerHTML = '<tr><td colspan="5" class="state err">' + p + "</td></tr>"; });
+        ["#draf tbody", "#usulan tbody", "#konfirmasi_draf tbody", "#konfirmasi tbody"].forEach(function (s) { document.querySelector(s).innerHTML = '<tr><td colspan="5" class="state err">' + p + "</td></tr>"; });
         el("galeri").innerHTML = '<div class="state err">' + p + "</div>"; el("arsip").innerHTML = '<div class="state err">' + p + "</div>";
       }),
       ambil("gb_arahan_terbaru?select=*&limit=50").then(gambarArahan).catch(function (e) {
