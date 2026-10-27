@@ -227,17 +227,56 @@
   .garis { margin-inline: calc(100% / 12); }
   .st .ket b { color: var(--accent); font-weight: 600; }
   .lembar > .blok:first-child { margin-top: 0; }
-  /* video sebagai daftar ringkas memanjang ke bawah (masukan pemilik 27 Oktober 2026, layout_output_video.png) */
-  .galeri { display: flex; flex-direction: column; gap: 0; }
-  .galeri > .item { display: grid; grid-template-columns: 60px minmax(0, 1fr) auto; grid-template-areas: "g j b" "g m b"; column-gap: 16px; row-gap: 4px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--rule); }
-  .galeri > .item > .sampul-btn, .galeri > .item > .kosong { grid-area: g; width: 60px; }
-  .galeri > .item > .kosong { aspect-ratio: 9 / 16; padding: 4px; font-size: .62rem; }
-  .galeri > .item .sampul-btn img { border-radius: 6px; }
-  .galeri > .item .jml { display: none; }
-  .galeri > .item .j { grid-area: j; margin-top: 0; font-size: .95rem; align-self: end; }
-  .galeri > .item .m { grid-area: m; justify-content: flex-start; flex-wrap: wrap; gap: 6px 14px; margin-top: 0; align-self: start; }
-  .galeri > .item > button.ghost.buka { grid-area: b; width: auto; margin-top: 0; white-space: nowrap; }
-  @media (max-width: 480px) { .galeri > .item { grid-template-columns: 48px minmax(0, 1fr); grid-template-areas: "g j" "g m" "g b"; column-gap: 12px; } .galeri > .item > .sampul-btn, .galeri > .item > .kosong { width: 48px; } .galeri > .item > button.ghost.buka { justify-self: start; } }
+  /* kartu video (mockup disetujui pemilik 27 Oktober 2026), di HP dua kolom dan rincian dilipat */
+  .galeri { display: flex; flex-direction: column; gap: 18px; }
+  .label-daftar { margin: 0; font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); font-weight: 700; }
+  .kartu-video { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 28px; padding: 22px; border: 1px solid var(--rule); border-radius: 16px; background: var(--bg); }
+  .kartu-video .pemutar { position: relative; aspect-ratio: 9 / 16; border-radius: 12px; overflow: hidden; background: #0b0b0c; border: 0; padding: 0; width: 100%; cursor: pointer; align-self: start; }
+  .kartu-video .pemutar video, .kartu-video .pemutar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .kartu-video .pemutar .pemutar-kecil { position: absolute; inset: 0; }
+  .kartu-video .lencana { position: absolute; left: 10px; top: 10px; background: rgba(0,0,0,.65); color: #fff; font-size: .72rem; font-weight: 700; padding: 4px 9px; border-radius: 999px; pointer-events: none; }
+  .isi-kartu { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+  .isi-kartu .atas { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: .82rem; }
+  .isi-kartu h3 { font-family: "Archivo Black", var(--judul); font-weight: 400; font-size: 1.5rem; line-height: 1.15; margin: 0; text-transform: none; letter-spacing: -0.01em; color: var(--ink); }
+  .spek-kartu { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; padding: 12px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+  .spek-kartu h6, .lipat-isi h6 { margin: 0 0 4px; font-size: .68rem; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); }
+  .spek-kartu p { margin: 0; font-weight: 600; font-size: .92rem; }
+  .spek-kartu span { font-size: .76rem; color: var(--ink-2); }
+  .lipat summary { cursor: pointer; font-size: .82rem; font-weight: 600; color: var(--accent); list-style: none; }
+  .lipat summary::-webkit-details-marker { display: none; }
+  .lipat summary::after { content: " ▾"; }
+  .lipat[open] summary::after { content: " ▴"; }
+  .lipat-isi { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+  .lipat-isi .cap { margin: 0; font-size: .9rem; line-height: 1.5; white-space: pre-line; display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
+  .lipat-isi .tagar { display: flex; flex-wrap: wrap; gap: 6px; }
+  .lipat-isi .tagar span { font-size: .76rem; padding: 2px 9px; border: 1px solid var(--rule); border-radius: 999px; color: var(--ink-2); }
+  .lipat-isi .cek { display: flex; gap: 6px; flex-wrap: wrap; }
+  .lipat-isi .cek img { width: 64px; height: 64px; object-fit: cover; border-radius: 6px; border: 1px solid var(--rule); display: block; }
+  .tombol-kartu { display: flex; gap: 10px; flex-wrap: wrap; margin-top: auto; }
+  .tombol-kartu a, .tombol-kartu button { font: inherit; font-size: .85rem; font-weight: 600; padding: 8px 16px; border-radius: 999px; border: 1px solid var(--ink); color: var(--ink); background: transparent; text-decoration: none; cursor: pointer; }
+  .tombol-kartu .utama { background: var(--ink); color: var(--bg); }
+  .halaman-nav { display: flex; justify-content: center; align-items: center; gap: 14px; font-size: .85rem; color: var(--ink-2); }
+  .halaman-nav button { font: inherit; font-weight: 600; padding: 7px 14px; border-radius: 999px; border: 1px solid var(--rule-2); background: transparent; color: var(--ink); cursor: pointer; }
+  .halaman-nav button:disabled { opacity: .35; cursor: default; }
+  @media (max-width: 760px) {
+    .kartu-video { grid-template-columns: 128px minmax(0, 1fr); gap: 14px; padding: 12px; border-radius: 12px; }
+    .kartu-video .lencana { font-size: .62rem; padding: 2px 6px; left: 6px; top: 6px; }
+    .isi-kartu { gap: 8px; }
+    .isi-kartu h3 { font-size: 1.02rem; }
+    .spek-kartu { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 10px; padding: 8px 0; }
+    .spek-kartu p { font-size: .82rem; } .spek-kartu span { display: none; }
+    .tombol-kartu a, .tombol-kartu button { padding: 6px 12px; font-size: .78rem; }
+    /* HP: isi kartu jadi anak grid langsung, rincian dan tombol selebar kartu di bawah pemutar */
+    .kartu-video { row-gap: 8px; align-items: start; }
+    .isi-kartu { display: contents; }
+    .kartu-video .pemutar { grid-column: 1; grid-row: 1 / span 3; }
+    .isi-kartu .atas, .isi-kartu h3, .spek-kartu { grid-column: 2; }
+    .lipat, .tombol-kartu { grid-column: 1 / -1; }
+    .tombol-kartu { gap: 6px; flex-wrap: nowrap; }
+    .tombol-kartu a, .tombol-kartu button { flex: 1 1 auto; text-align: center; padding: 7px 8px; white-space: nowrap; }
+    .spek-kartu p { overflow-wrap: anywhere; }
+    .lipat-isi .cap { -webkit-line-clamp: 4; }
+  }
   /* kemajuan kerja latar: bilah, kotak panel, pemutar */
   .progres { margin: 0 0 18px; padding: 14px 16px; border: 1px solid var(--rule-2); border-radius: 12px; background: var(--bg); grid-column: 1 / -1; }
   .progres .baris { display: flex; justify-content: space-between; gap: 12px; font-size: 0.88rem; margin-bottom: 8px; }
@@ -930,39 +969,69 @@
 
   // ------------------------------------------------------------- video (galeri dan dialog, pola BS)
   function sampulPanel(c) { var st = c.storyboard || {}; var p = (st.panel || []).filter(function (x) { return x.path; })[0]; return p ? PUBLIK + "gb-storyboard/" + p.path : null; }
+  // Kartu video (mockup disetujui pemilik 27 Oktober 2026): pemutar 9:16 dengan sampul, keterangan inti, rincian
+  // yang bisa dilipat di HP (caption IG, tagar, lembar cek), dan halaman 3 video per halaman.
+  function sampulVideo(c) { var v = c.video || {}; return v.sampul ? PUBLIK + "gb-video/" + v.sampul : sampulPanel(c); }
   function itemVideo(c) {
     var proses = ["setuju", "video_revisi"].indexOf(c.status) >= 0 && c.progres && /video/.test(c.progres.tugas || "");
-    var v = c.video || {};
-    var gambar;
+    var v = c.video || {}, poster = sampulVideo(c), menit = Math.round(v.durasi || 0);
+    var pemutar;
     if (proses) {
       progresAktif[c.kode] = c.progres;
-      gambar = '<button type="button" class="sampul-btn buka" data-kode="' + esc(c.kode) + '" aria-label="Lihat kemajuan video ' + esc(c.kode) + '"><span class="pemutar-kecil" data-pemutar="' + esc(c.kode) + '">' +
+      pemutar = '<button type="button" class="pemutar buka" data-kode="' + esc(c.kode) + '" aria-label="Lihat kemajuan video ' + esc(c.kode) + '"><span class="pemutar-kecil" data-pemutar="' + esc(c.kode) + '">' +
         '<img alt="" hidden><span class="gelombang" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>' +
         '<span class="tumpang"><b class="persen-besar">0%</b><span class="ket-pemutar"></span></span><span class="garis-render"></span></span></button>';
+    } else if (v.path) {
+      pemutar = '<div class="pemutar"><video controls playsinline preload="none"' + (poster ? ' poster="' + esc(poster) + '"' : "") + ' src="' + esc(PUBLIK + "gb-video/" + v.path) + '"></video>' +
+        '<span class="lencana">▶ v' + esc(v.versi) + " · " + Math.floor(menit / 60) + ":" + ("0" + menit % 60).slice(-2) + "</span></div>";
     } else {
-      var u = sampulPanel(c);
-      gambar = u ? '<button type="button" class="sampul-btn buka sampul-video" data-kode="' + esc(c.kode) + '" aria-label="Lihat video ' + esc(c.kode) + '"><img loading="lazy" src="' + esc(u) + '" alt="">' +
-        (v.path ? '<span class="jml">▶ v' + esc(v.versi) + " · " + esc(Math.round(v.durasi || 0)) + " dtk</span>" : '<span class="jml">menyiapkan</span>') + "</button>"
-        : '<div class="kosong">belum ada storyboard<br><span class="mono">' + esc(c.kode) + "</span></div>";
+      pemutar = '<div class="pemutar kosong">' + (poster ? '<img loading="lazy" src="' + esc(poster) + '" alt="">' : "") + '<span class="lencana">menyiapkan</span></div>';
     }
-    return '<article class="item" data-kode="' + esc(c.kode) + '">' + gambar + '<div class="j">' + esc(c.judul) + ' <span class="kode">' + esc(c.kode) + "</span></div>" +
-      '<div class="m">' + status(STATUS_GB, c.status) + (v.path ? '<span class="kode">v' + esc(v.versi) + " · " + esc(Math.round(v.durasi || 0)) + " detik</span>" : "") + '<span class="kode">' + esc(fmtWib(c.dikirim_wib || c.dibuat_wib)) + "</span></div>" +
-      '<button type="button" class="ghost buka" data-kode="' + esc(c.kode) + '">' + (proses ? "Lihat kemajuan" : "Buka video") + "</button></article>";
+    var cap = c.caption || {}, tagar = (c.tagar || []).slice(0, 6);
+    var cek = (v.lembar_cek || []).filter(function (q) { return q !== v.sampul; });
+    var rinci = '<details class="lipat"' + (window.innerWidth > 760 ? " open" : "") + '><summary>Rincian</summary><div class="lipat-isi">' +
+      (cap.instagram ? '<h6>Caption Instagram</h6><p class="cap">' + esc(cap.instagram) + "</p>" : "") +
+      (tagar.length ? '<div class="tagar">' + tagar.map(function (t) { return "<span>#" + esc(String(t).replace(/^#/, "")) + "</span>"; }).join("") + "</div>" : "") +
+      (cek.length ? '<h6>Lembar cek bingkai</h6><div class="cek">' + cek.map(function (q) {
+        return '<a href="' + esc(PUBLIK + "gb-video/" + q) + '" target="_blank" rel="noopener noreferrer"><img loading="lazy" src="' + esc(PUBLIK + "gb-video/" + q) + '" alt="lembar cek"></a>'; }).join("") + "</div>" : "") +
+      "</div></details>";
+    var dibuat = v.dibuat_at ? fmtPukul(new Date(new Date(v.dibuat_at).getTime() + 7 * 3600e3).toISOString().replace("T", " ")) : fmtPukul(c.dikirim_wib || c.dibuat_wib);
+    return '<article class="kartu-video" data-kode="' + esc(c.kode) + '">' + pemutar + '<div class="isi-kartu">' +
+      '<div class="atas">' + status(STATUS_GB, c.status) + '<span class="kode">' + esc(c.kode) + "</span></div>" +
+      "<h3>" + esc(c.judul) + "</h3>" +
+      '<div class="spek-kartu">' +
+        (v.path ? "<div><h6>Durasi</h6><p>" + menit + " detik</p><span>1080 × 1920, 30 fps</span></div>" : "") +
+        "<div><h6>Narator</h6><p>" + esc(v.narator || "Dany Saputra") + "</p><span>ElevenLabs</span></div>" +
+        "<div><h6>Dibuat</h6><p>" + esc(dibuat) + "</p><span>versi " + esc(v.versi || "–") + "</span></div>" +
+        "<div><h6>Sumber</h6><p>" + esc(String(c.penerbit || "–").replace(/\.(co\.id|com|id|net|org)$/i, "")) + "</p><span>" + esc(fmtHari(c.published_time)) + "</span></div>" +
+      "</div>" + rinci +
+      '<div class="tombol-kartu"><button type="button" class="utama buka" data-kode="' + esc(c.kode) + '">' + (proses ? "Lihat kemajuan" : "Detail lengkap") + "</button>" +
+        (v.path ? '<a href="' + esc(PUBLIK + "gb-video/" + v.path) + '" download>Unduh MP4</a>' : "") +
+        (c.link ? '<a href="' + esc(aman(c.link)) + '" target="_blank" rel="noopener noreferrer">Berita sumber</a>' : "") + "</div>" +
+      "</div></article>";
   }
   function pasangBuka(wadah) { wadah.querySelectorAll("button.buka").forEach(function (b) { b.addEventListener("click", function () { bukaVideo(b.getAttribute("data-kode")); }); }); }
-  function gambarGaleri(rows) {
-    var g = el("galeri");
-    rows = rows.filter(function (c) { return c.video && c.video.path || ["setuju", "video_revisi"].indexOf(c.status) >= 0; });
-    if (!rows.length) { g.innerHTML = '<div class="state">Belum ada video. Video dibuat sesudah storyboard disetujui.</div>'; return; }
-    g.innerHTML = rows.map(itemVideo).join("");
+  var PER_HALAMAN = 3, HALAMAN = {};
+  function daftarBerhalaman(g, rows, kosong) {
+    if (!rows.length) { g.innerHTML = '<div class="state">' + kosong + "</div>"; return; }
+    var id = g.id, n = Math.ceil(rows.length / PER_HALAMAN), h = Math.min(HALAMAN[id] || 0, n - 1);
+    HALAMAN[id] = h;
+    var nav = n > 1 ? '<nav class="halaman-nav" aria-label="Halaman video"><button type="button" data-ke="-1"' + (h ? "" : " disabled") + '>‹ Sebelumnya</button>' +
+      "<span>" + (h + 1) + " dari " + n + "</span>" + '<button type="button" data-ke="1"' + (h < n - 1 ? "" : " disabled") + ">Berikutnya ›</button></nav>" : "";
+    g.innerHTML = '<p class="label-daftar">' + rows.length + " video</p>" + rows.slice(h * PER_HALAMAN, (h + 1) * PER_HALAMAN).map(itemVideo).join("") + nav;
     pasangBuka(g);
+    g.querySelectorAll(".halaman-nav button").forEach(function (b) {
+      b.addEventListener("click", function () { HALAMAN[id] = h + Number(b.getAttribute("data-ke")); daftarBerhalaman(g, rows, kosong); g.scrollIntoView({ behavior: "smooth", block: "start" }); });
+    });
+    // satu video berputar pada satu waktu
+    g.querySelectorAll("video").forEach(function (vid) { vid.addEventListener("play", function () { document.querySelectorAll(".kartu-video video").forEach(function (lain) { if (lain !== vid) lain.pause(); }); }); });
+  }
+  function gambarGaleri(rows) {
+    daftarBerhalaman(el("galeri"), rows.filter(function (c) { return c.video && c.video.path || ["setuju", "video_revisi"].indexOf(c.status) >= 0; }),
+      "Belum ada video. Video dibuat sesudah storyboard disetujui.");
   }
   function gambarTerbit(rows) {
-    var g = el("arsip");
-    rows = rows.filter(function (c) { return ["siap_terbit", "terbit"].indexOf(c.status) >= 0; });
-    if (!rows.length) { g.innerHTML = '<div class="state">Belum ada video yang disetujui.</div>'; return; }
-    g.innerHTML = rows.map(itemVideo).join("");
-    pasangBuka(g);
+    daftarBerhalaman(el("arsip"), rows.filter(function (c) { return ["siap_terbit", "terbit"].indexOf(c.status) >= 0; }), "Belum ada video yang disetujui.");
   }
   // Metadata video di dialog (pemilik 26 Oktober 2026: bukan sekadar tombol lembar cek):
   // judul, deskripsi, spesifikasi, kiasan, sumber informasi, kredit, status. Pola kotak .rinci BS.
