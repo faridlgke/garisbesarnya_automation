@@ -213,11 +213,22 @@
   /* ---- tambahan garisbesarnya, di luar halaman BS ---- */
   .tajuk .nama { font-family: "Archivo Black", var(--judul); font-weight: 400; color: var(--ink); }
   .tajuk .nama span { color: var(--kuning); }
-  .tajuk { border-bottom-color: var(--ink); }
-  .sungai { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .tajuk { border-bottom-color: var(--ink); text-align: center; }
+  .tajuk .sub { margin-bottom: 0; }
   .garis { margin-inline: calc(100% / 12); }
   .st .ket b { color: var(--accent); font-weight: 600; }
-  #p-bahan > .blok:first-child { margin-top: 0; }
+  #p-bahan > .blok:first-child, #p-video > .blok:first-child { margin-top: 0; }
+  /* video sebagai daftar ringkas memanjang ke bawah (masukan pemilik 27 Oktober 2026, layout_output_video.png) */
+  .galeri { display: flex; flex-direction: column; gap: 0; }
+  .galeri > .item { display: grid; grid-template-columns: 60px minmax(0, 1fr) auto; grid-template-areas: "g j b" "g m b"; column-gap: 16px; row-gap: 4px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--rule); }
+  .galeri > .item > .sampul-btn, .galeri > .item > .kosong { grid-area: g; width: 60px; }
+  .galeri > .item > .kosong { aspect-ratio: 9 / 16; padding: 4px; font-size: .62rem; }
+  .galeri > .item .sampul-btn img { border-radius: 6px; }
+  .galeri > .item .jml { display: none; }
+  .galeri > .item .j { grid-area: j; margin-top: 0; font-size: .95rem; align-self: end; }
+  .galeri > .item .m { grid-area: m; justify-content: flex-start; flex-wrap: wrap; gap: 6px 14px; margin-top: 0; align-self: start; }
+  .galeri > .item > button.ghost.buka { grid-area: b; width: auto; margin-top: 0; white-space: nowrap; }
+  @media (max-width: 480px) { .galeri > .item { grid-template-columns: 48px minmax(0, 1fr); grid-template-areas: "g j" "g m" "g b"; column-gap: 12px; } .galeri > .item > .sampul-btn, .galeri > .item > .kosong { width: 48px; } .galeri > .item > button.ghost.buka { justify-self: start; } }
   /* kemajuan kerja latar: bilah, kotak panel, pemutar */
   .progres { margin: 0 0 18px; padding: 14px 16px; border: 1px solid var(--rule-2); border-radius: 12px; background: var(--bg); grid-column: 1 / -1; }
   .progres .baris { display: flex; justify-content: space-between; gap: 12px; font-size: 0.88rem; margin-bottom: 8px; }
@@ -288,8 +299,7 @@
 <div class="wrap">
   <section class="tajuk" aria-label="Tentang halaman ini">
     <p class="nama">garis<span>besar</span>nya</p>
-    <p class="sub">Satir Automation Testing</p>
-    <p class="sangkal"><b>Catatan.</b> Tiap pagi bahan berita dikumpulkan dan dinilai, tiga usulan topik dikirim ke WhatsApp pemilik, lalu naskah, storyboard, dan video dibuat dan disetujui satu per satu. Tidak ada yang tayang tanpa persetujuan manusia di setiap gerbang. Berita nyata diceritakan apa adanya, tanpa nama orang, partai, atau lembaga.</p>
+    <p class="sub">Storytelling with Video Automation</p>
   </section>
   <header class="kepala">
     <div>
@@ -364,8 +374,6 @@
   </section>
 
   <section class="lembar" id="p-video" role="tabpanel" hidden>
-    <h2 id="j-video">Desain/Video</h2>
-    <p class="lead">Gerbang 3: video motion 1080 kali 1920 dari naskah, storyboard, dan suara yang disetujui. Dibuat dengan mesin studio garisbesarnya: kamera 3D yang bergerak di dalam ruang, tokoh krem bergaris tinta dengan satu subjek emas, caption kata demi kata mengikuti suara narasi ElevenLabs, bingkai pertama berisi sampul, dan ditutup kartu Referensi berisi tautan berita. Di bawah dua menit, dicek bingkai demi bingkai sebelum dikirim ke WhatsApp. Klik "Buka video" untuk menonton berikut storyboard dan caption.</p>
     <div class="blok"><div class="galeri" id="galeri"><div class="state">memuat…</div></div></div>
   </section>
 
@@ -537,7 +545,6 @@
     el("c5").textContent = id_(terbit);
     el("k5").innerHTML = '<span class="dot ' + (n(["terbit"]) ? "ok" : (terbit ? "warn" : "")) + '"></span>' + (terbit ? n(["siap_terbit"]) + " siap terbit, Postiz menyusul" : "belum ada yang tayang");
     el("j-draf").innerHTML = "<b>" + id_(draf) + "</b> storyboard dan naskah, <b>" + usulanTunggu + "</b> usulan topik menunggu dipilih";
-    el("j-video").innerHTML = "<b>" + id_(video) + "</b> video";
     el("j-konfirmasi-draf").innerHTML = tungguDraf ? "<b>" + tungguDraf + "</b> draft menunggu balasan di WhatsApp" : "<b>Tidak ada</b> draft yang menunggu balasan";
     el("j-konfirmasi").innerHTML = tunggu ? "<b>" + tunggu + "</b> video menunggu balasan di WhatsApp" : "<b>Tidak ada</b> video yang menunggu balasan";
     el("j-terbit").innerHTML = terbit ? "<b>" + terbit + "</b> video disetujui" : "<b>Belum ada</b> video yang disetujui";
@@ -922,7 +929,7 @@
         : '<div class="kosong">belum ada storyboard<br><span class="mono">' + esc(c.kode) + "</span></div>";
     }
     return '<article class="item" data-kode="' + esc(c.kode) + '">' + gambar + '<div class="j">' + esc(c.judul) + ' <span class="kode">' + esc(c.kode) + "</span></div>" +
-      '<div class="m">' + status(STATUS_GB, c.status) + '<span class="kode">' + esc(fmtWib(c.dikirim_wib || c.dibuat_wib)) + "</span></div>" +
+      '<div class="m">' + status(STATUS_GB, c.status) + (v.path ? '<span class="kode">v' + esc(v.versi) + " · " + esc(Math.round(v.durasi || 0)) + " detik</span>" : "") + '<span class="kode">' + esc(fmtWib(c.dikirim_wib || c.dibuat_wib)) + "</span></div>" +
       '<button type="button" class="ghost buka" data-kode="' + esc(c.kode) + '">' + (proses ? "Lihat kemajuan" : "Buka video") + "</button></article>";
   }
   function pasangBuka(wadah) { wadah.querySelectorAll("button.buka").forEach(function (b) { b.addEventListener("click", function () { bukaVideo(b.getAttribute("data-kode")); }); }); }
