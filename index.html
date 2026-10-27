@@ -288,7 +288,7 @@
   <section class="tajuk" aria-label="Tentang halaman ini">
     <p class="nama">garis<span>besar</span>nya</p>
     <p class="sub">Satir Automation Testing</p>
-    <p class="sangkal"><b>Catatan.</b> Tiap pagi bahan berita dikumpulkan dan dinilai, tiga usulan topik dikirim ke WhatsApp pemilik, lalu naskah, storyboard, dan video dibuat dan disetujui satu per satu. Tidak ada yang tayang tanpa persetujuan manusia di setiap gerbang. Selalu kiasan, tanpa nama orang, partai, atau lembaga.</p>
+    <p class="sangkal"><b>Catatan.</b> Tiap pagi bahan berita dikumpulkan dan dinilai, tiga usulan topik dikirim ke WhatsApp pemilik, lalu naskah, storyboard, dan video dibuat dan disetujui satu per satu. Tidak ada yang tayang tanpa persetujuan manusia di setiap gerbang. Berita nyata diceritakan apa adanya, tanpa nama orang, partai, atau lembaga.</p>
   </section>
   <header class="kepala">
     <div>
@@ -300,7 +300,7 @@
   <p class="petunjuk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11V5a2 2 0 0 1 4 0v6"/><path d="M13 9.5a2 2 0 0 1 4 0V12"/><path d="M17 11a2 2 0 0 1 4 0v4a7 7 0 0 1-7 7h-1a7 7 0 0 1-6-3.4L4.3 15a2 2 0 0 1 3.4-2L9 15"/></svg> Klik angka di tiap tahap untuk membuka rinciannya di bawah</p>
   <nav class="sungai" role="tablist" aria-label="Tahap">
     <div class="garis" aria-hidden="true"><span class="mati"></span><span class="hidup"></span></div>
-    <button class="st" role="tab" data-tab="bahan" aria-selected="true"><span class="ang" id="c1">–</span><span class="nm">Bahan</span><span class="titik"></span><span class="ket" id="k1">scraping dan triase</span></button>
+    <button class="st" role="tab" data-tab="bahan" aria-selected="true"><span class="ang" id="c1">–</span><span class="nm">Bahan</span><span class="titik"></span><span class="ket" id="k1">pemantauan dan kurasi</span></button>
     <button class="st" role="tab" data-tab="draf"><span class="ang" id="c2">–</span><span class="nm">Draft</span><span class="titik"></span><span class="ket" id="k2">usulan, naskah, storyboard</span></button>
     <button class="st" role="tab" data-tab="konfirmasi_draf"><span class="ang" id="c6">–</span><span class="nm">Konfirmasi draft</span><span class="titik"></span><span class="ket" id="k6">topik, naskah, storyboard</span></button>
     <button class="st" role="tab" data-tab="video"><span class="ang" id="c3">–</span><span class="nm">Desain/Video</span><span class="titik"></span><span class="ket" id="k3">video motion</span></button>
@@ -310,7 +310,7 @@
 
   <section class="lembar" id="p-bahan" role="tabpanel">
     <h2 id="j-bahan">Bahan berita</h2>
-    <p class="lead">Scraping lewat Google News tiap pagi 06.00 WIB, lalu tiap berita dinilai dari judul dan ringkasannya: sedang ramai, polanya bisa dikiaskan, bukan tragedi. Tiga teratas dari kelompok topik berbeda jadi usulan topik pagi, berikutnya dipakai kalau pemilik membalas GANTI. Gambar dari sumber berita tidak pernah dipakai.</p>
+    <p class="lead">Tiap pagi pukul 06.00 WIB berita dari Google News dipantau lewat judul dan ringkasannya. Dua puluh empat calon terkuat dari tiga hari terakhir lalu dikurasi GPT dengan enam patokan: ada fakta yang janggal, sebab dan akibatnya jelas, ada orang biasa yang menanggung, bisa digambar, poinnya muat dalam satu kalimat, dan aman secara fakta. Berita diceritakan apa adanya, tanpa kiasan. Tiga teratas dari topik berbeda jadi usulan topik pagi, berikutnya dipakai kalau pemilik membalas GANTI. Kalau bahannya lemah, hari itu tidak ada usulan, dan topik yang sudah pernah diusulkan tidak diulang. Gambar dari sumber berita tidak pernah dipakai.</p>
     <div class="blok">
       <h3>Hasil triase hari ini <span>peringkat di antara satu berita per kelompok topik</span></h3>
       <div class="scroll"><table id="pilihan">
@@ -321,7 +321,7 @@
     <div class="blok">
       <h3>Per sumber <span>diurutkan dari yang paling baru menyumbang</span></h3>
       <div class="scroll"><table id="denyut">
-        <thead><tr><th>Sumber</th><th>Status</th><th class="num">Total</th><th>Berita terbaru</th><th>Terakhir scraping</th></tr></thead>
+        <thead><tr><th>Sumber</th><th>Status</th><th class="num">Total</th><th>Berita terbaru</th><th>Terakhir dipantau</th></tr></thead>
         <tbody><tr><td colspan="5" class="state">memuat…</td></tr></tbody>
       </table></div>
     </div>
@@ -347,7 +347,7 @@
 
   <section class="lembar" id="p-draf" role="tabpanel" hidden>
     <h2 id="j-draf">Draft</h2>
-    <p class="lead">Gerbang 1: tiga usulan topik dikirim tiap pagi, pemilik memilih satu dengan ACC atau meminta tiga lain dengan GANTI. Gerbang 2: sesudah dipilih, GPT menulis naskah kiasan dan storyboard digambar per adegan, lalu dikirim untuk ACC atau REVISI. Klik baris untuk membuka isinya. Yang sedang dibuat terbuka sendiri, panelnya muncul satu per satu begitu jadi.</p>
+    <p class="lead">Gerbang 1: tiga usulan topik dikirim tiap pagi, pemilik memilih satu dengan ACC atau meminta tiga lain dengan GANTI. Gerbang 2: sesudah dipilih, GPT menulis naskah (berita diceritakan apa adanya) dan storyboard digambar per adegan, lalu dikirim untuk ACC atau REVISI. Klik baris untuk membuka isinya. Yang sedang dibuat terbuka sendiri, panelnya muncul satu per satu begitu jadi.</p>
     <div class="blok">
       <h3>Storyboard dan naskah <span>status gerbang di kolom kedua</span></h3>
       <div class="scroll"><table id="draf">
@@ -356,7 +356,7 @@
       </table></div>
     </div>
     <div class="blok">
-      <h3>Usulan topik <span>pola, usulan kiasan, dua sisi</span></h3>
+      <h3>Usulan topik <span>poin, cara cerita, dua sisi</span></h3>
       <div class="scroll"><table id="usulan">
         <thead><tr><th>Kode</th><th>Status</th><th>Judul berita</th><th class="num">Skor</th><th>Batch</th></tr></thead>
         <tbody><tr><td colspan="5" class="state">memuat…</td></tr></tbody>
@@ -366,7 +366,7 @@
 
   <section class="lembar" id="p-video" role="tabpanel" hidden>
     <h2 id="j-video">Desain/Video</h2>
-    <p class="lead">Gerbang 3: animatic 720 kali 1280 dari storyboard yang disetujui. Panel bergerak sesuai kamera papan adegan, suara narasi ElevenLabs, satu kata di tengah layar mengikuti suara, ditutup kartu "Diadaptasi dari pemberitaan". Klik "Buka video" untuk menonton berikut storyboard dan caption. Yang sedang dirender menampilkan pratinjau bingkai terakhirnya.</p>
+    <p class="lead">Gerbang 3: video motion 1080 kali 1920 dari naskah, storyboard, dan suara yang disetujui. Dibuat dengan mesin studio garisbesarnya: kamera 3D yang bergerak di dalam ruang, tokoh krem bergaris tinta dengan satu subjek emas, caption kata demi kata mengikuti suara narasi ElevenLabs, bingkai pertama berisi sampul, dan ditutup kartu Referensi berisi tautan berita. Di bawah dua menit, dicek bingkai demi bingkai sebelum dikirim ke WhatsApp.</p>
     <div class="blok"><div class="galeri" id="galeri"><div class="state">memuat…</div></div></div>
   </section>
 
@@ -417,7 +417,7 @@
   </dialog>
 
   <footer>
-    Dibaca langsung dari basis data, baca saja, isi penuh bahan tidak dibuka. Jam dalam WIB. Scraping, triase, dan usulan topik 06.00. Naskah, storyboard, dan video dibuat sesudah pemilik membalas di WhatsApp.
+    Dibaca langsung dari basis data, baca saja, isi penuh bahan tidak dibuka. Jam dalam WIB. Pemantauan berita, kurasi, dan usulan topik 06.00. Naskah, storyboard, dan video dibuat sesudah pemilik membalas di WhatsApp.
   </footer>
 </div>
 
@@ -612,7 +612,7 @@
       el("k3").innerHTML = '<span class="dot warn"></span><b>' + hitungPersen(videoJalan) + "%</b> " + esc((videoJalan.langkah || "").toLowerCase());
     } else {
       var v = rows.filter(function (c) { return c.status === "video_dikirim"; }).length;
-      el("k3").innerHTML = '<span class="dot ' + (v ? "warn" : "") + '"></span>' + (v ? v + " video menunggu ditonton" : "animatic");
+      el("k3").innerHTML = '<span class="dot ' + (v ? "warn" : "") + '"></span>' + (v ? v + " video menunggu ditonton" : "video motion");
     }
   }
   function segarkanProgres() {
@@ -767,7 +767,7 @@
         return { "Terbit": r.published_time, "Penerbit": r.penerbit, "Sumber": nama(r.source), "Judul": dekode(r.news_title), "Ringkasan": dekode(r.ringkas), "Tautan": r.link, "Masuk (WIB)": r.masuk_wib };
       })), "bahan");
       if (res[1].length) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(res[1].map(function (c) {
-        return { "Kode": c.kode, "Status": c.status, "Tanggal": c.tanggal, "Judul": c.judul, "Premis": c.premis, "Kiasan": c.kiasan_inti,
+        return { "Kode": c.kode, "Status": c.status, "Tanggal": c.tanggal, "Judul": c.judul, "Premis": c.premis, "Inti cerita": c.kiasan_inti,
           "Naskah": (c.naskah || []).map(function (f, i) { return (i + 1) + ". " + f.frasa + " [" + f.kata_layar + "]"; }).join("\n"),
           "Caption Instagram": (c.caption || {}).instagram, "Kredit": (c.caption || {}).kredit, "Putaran": c.putaran, "Berita": dekode(c.news_title), "Tautan": c.link };
       })), "cerita");
@@ -810,7 +810,7 @@
         return "<li>" + (dlg ? "“" : "") + esc(f.teks) + (dlg ? "”" : "") + ' <span class="redup">[' + esc(f.tag) + "]</span></li>";
       }).join("");
       return '<section class="kotak"><h6>Draf ' + esc(d.label) + " · " + esc((k.teknik_satir || "").replace(/_/g, " ")) + "</h6>" +
-        "<p><strong>" + esc(n.judul) + "</strong></p><p>Kiasan: " + esc(n.kiasan_inti) + "</p>" +
+        "<p><strong>" + esc(n.judul) + "</strong></p><p>Inti cerita: " + esc(n.kiasan_inti) + "</p>" +
         '<p class="redup">' + esc(d.jumlah_kata) + " kata · nilai terendah " + (angka.length ? Math.min.apply(null, angka) : "–") +
         " dari 5 · penebak buta: " + esc(t.isu_yang_disindir || "–") + "</p>" +
         '<ol style="margin:6px 0 0;padding-left:18px">' + isi + "</ol>" +
@@ -832,7 +832,7 @@
     var spek = '<div class="spek">' +
       "<div><h6>Bentuk</h6><p>Video 9:16, sekitar " + esc(c.durasi_perkiraan || "–") + " detik</p><span>" + esc(c.jumlah_kata || "–") + " kata, " + esc((c.naskah || []).length) + " frasa</span></div>" +
       '<div><h6>Platform</h6><ul class="kanal"><li><span>Instagram Reels</span></li><li><span>TikTok</span></li><li><span>YouTube Shorts</span></li><li><span>Threads</span></li></ul></div>' +
-      "<div><h6>Kiasan</h6><p>" + esc(c.kiasan_inti || (c.usulan || {}).kiasan || "–") + "</p><span>" + esc(c.premis || "") + "</span></div></div>";
+      "<div><h6>Inti cerita</h6><p>" + esc(c.kiasan_inti || (c.usulan || {}).kiasan || "–") + "</p><span>" + esc(c.premis || "") + "</span></div></div>";
     var isiStory = proses ? '<div class="papan" data-papan="' + esc(c.kode) + '" data-sidik="' + esc(sidikPapan(p)) + '">' + isiPapanProses(p) + "</div>"
       : '<div class="papan">' + storyboardJadi(c) + "</div>";
     var isiNaskah = menulis ? '<div class="kerangka"><div class="kilau" style="width:92%"></div><div class="kilau" style="width:78%"></div><div class="kilau" style="width:86%"></div><div class="kilau" style="width:64%"></div><span>GPT sedang menulis enam konsep, menguji kejelasannya lewat penebak buta, menilai, lalu menulis tiga draf naskah. Biasanya lima sampai sepuluh menit.</span></div>' : naskahDaftar(c);
@@ -891,7 +891,7 @@
     if (!rows.length) { tb.innerHTML = '<tr><td colspan="5" class="state">Belum ada usulan topik. Tiga usulan dikirim tiap pagi sesudah triase.</td></tr>'; return; }
     tb.innerHTML = rows.slice(0, 30).map(function (c) {
       var u = c.usulan || {};
-      var rinci = '<div class="rinci"><section class="kol-slide"><h6>Pola yang disindir</h6><p>' + esc(u.pola || "–") + '</p><div class="kotak"><h6>Usulan kiasan</h6><p>' + esc(u.kiasan || "–") + "</p></div></section>" +
+      var rinci = '<div class="rinci"><section class="kol-slide"><h6>Poin cerita</h6><p>' + esc(u.pola || "–") + '</p><div class="kotak"><h6>Cara cerita</h6><p>' + esc(u.kiasan || "–") + "</p></div></section>" +
         '<section class="kol-cap"><h6>Dua sisi</h6><p>' + esc(u.sisi || "–") + '</p><div class="kotak"><h6>Alasan triase</h6><p>' + esc(u.alasan_triase || "–") + "</p></div></section>" +
         '<footer class="kaki-rinci"><span>Berita: <a class="tautan" href="' + esc(aman(c.link)) + '" target="_blank" rel="noopener noreferrer">' + esc(dekode(c.news_title)) + "</a> (" + esc(c.penerbit || "") + ")</span>" +
         (c.alasan_status ? "<span>" + esc(c.alasan_status) + "</span>" : "") + "</footer></div>";
@@ -960,7 +960,7 @@
         "<div><h6>Narator</h6><p>" + esc(v.narator || (v.suara === "elevenlabs" ? "suara bawaan" : (v.suara || "–"))) + "</p><span>" + esc(NARATOR[v.suara] || "") + (c.jumlah_kata ? ", " + esc(c.jumlah_kata) + " kata" : "") + "</span></div>" +
         "<div><h6>Dibuat</h6><p>" + esc(dibuat) + "</p><span>" + esc((c.naskah || []).length) + " frasa" + (shot ? ", " + shot + " shot" : "") + "</span></div>" +
       "</div>" +
-      '<section class="kol-slide"><h6>Kiasan</h6><p style="margin:0">' + esc(c.kiasan_inti || "–") + "</p>" +
+      '<section class="kol-slide"><h6>Inti cerita</h6><p style="margin:0">' + esc(c.kiasan_inti || "–") + "</p>" +
         ((c.fakta || {}).isu ? '<div class="kotak"><h6>Isu sebenarnya</h6><p>' + esc(c.fakta.isu) + "</p></div>" : "") + "</section>" +
       '<section class="kol-cap"><h6>Sumber informasi</h6><p style="margin:0"><strong>' + esc(c.penerbit || "–") + "</strong>, " + esc(fmtHari(c.published_time)) + "</p>" +
         '<p style="margin:6px 0 0"><a class="tautan" href="' + esc(aman(c.link)) + '" target="_blank" rel="noopener noreferrer">' + esc(dekode(c.news_title) || "berita sumber") + "</a></p>" +
@@ -1000,7 +1000,7 @@
     }).join("");
     var cap = c.caption || {};
     el("lihat-caption").textContent = [cap.instagram || "", cap.kredit || "", (c.tagar || []).map(function (t) { return "#" + t; }).join(" ")].filter(Boolean).join("\n\n");
-    el("lihat-ringkas").innerHTML = [status(STATUS_GB, c.status), c.kiasan_inti ? "kiasan " + esc(c.kiasan_inti) : "", c.durasi_perkiraan ? "± " + esc(c.durasi_perkiraan) + " detik" : "",
+    el("lihat-ringkas").innerHTML = [status(STATUS_GB, c.status), c.kiasan_inti ? esc(c.kiasan_inti) : "", c.durasi_perkiraan ? "± " + esc(c.durasi_perkiraan) + " detik" : "",
       c.link ? '<a class="tautan" href="' + esc(aman(c.link)) + '" target="_blank" rel="noopener noreferrer">sumber asli</a>' : ""].filter(Boolean).join("<span>·</span>");
     var kotak = el("lihat");
     document.querySelectorAll("#galeri .item, #arsip .item").forEach(function (it) { it.classList.toggle("aktif", it.getAttribute("data-kode") === kode); });
