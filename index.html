@@ -217,6 +217,7 @@
   .sungai { grid-template-columns: repeat(6, minmax(0, 1fr)); }
   .garis { margin-inline: calc(100% / 12); }
   .st .ket b { color: var(--accent); font-weight: 600; }
+  #p-bahan > .blok:first-child { margin-top: 0; }
   /* kemajuan kerja latar: bilah, kotak panel, pemutar */
   .progres { margin: 0 0 18px; padding: 14px 16px; border: 1px solid var(--rule-2); border-radius: 12px; background: var(--bg); grid-column: 1 / -1; }
   .progres .baris { display: flex; justify-content: space-between; gap: 12px; font-size: 0.88rem; margin-bottom: 8px; }
@@ -309,8 +310,6 @@
   </nav>
 
   <section class="lembar" id="p-bahan" role="tabpanel">
-    <h2 id="j-bahan">Bahan berita</h2>
-    <p class="lead">Tiap pagi pukul 06.00 WIB berita dari Google News dipantau lewat judul dan ringkasannya. Dua puluh empat calon terkuat dari tiga hari terakhir lalu dikurasi GPT dengan enam patokan: ada fakta yang janggal, sebab dan akibatnya jelas, ada orang biasa yang menanggung, bisa digambar, poinnya muat dalam satu kalimat, dan aman secara fakta. Berita diceritakan apa adanya, tanpa kiasan. Tiga teratas dari topik berbeda jadi usulan topik pagi, berikutnya dipakai kalau pemilik membalas GANTI. Kalau bahannya lemah, hari itu tidak ada usulan, dan topik yang sudah pernah diusulkan tidak diulang. Gambar dari sumber berita tidak pernah dipakai.</p>
     <div class="blok">
       <h3>Hasil triase hari ini <span>peringkat di antara satu berita per kelompok topik</span></h3>
       <div class="scroll"><table id="pilihan">
@@ -528,7 +527,6 @@
     if (CORONG.bahan != null) {
       el("c1").textContent = id_(CORONG.bahan);
       el("k1").textContent = "+" + id_(CORONG.baru || 0) + " terbit dua hari terakhir";
-      el("j-bahan").innerHTML = "<b>" + id_(CORONG.bahan) + "</b> bahan di basis data, <b>" + id_(CORONG.baru || 0) + "</b> terbit dua hari terakhir";
     }
     el("c2").textContent = id_(draf);
     el("c3").textContent = id_(video);
