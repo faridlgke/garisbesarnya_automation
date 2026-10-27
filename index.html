@@ -215,9 +215,18 @@
   .tajuk .nama span { color: var(--kuning); }
   .tajuk { border-bottom-color: var(--ink); text-align: center; }
   .tajuk .sub { margin-bottom: 0; }
+  /* LIVE dan hitung mundur (pemilik 27 Oktober 2026: "kedap kedip merah LIVE ... countdown ke konten selanjutnya") */
+  .denyut { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 10px 16px; margin: 18px 0 0; font-size: 0.92rem; color: var(--ink-2); }
+  .live { display: inline-flex; align-items: center; gap: 7px; padding: 4px 11px 4px 9px; border-radius: 999px; background: #D7263D; color: #fff; font-weight: 800; letter-spacing: 0.12em; font-size: 0.78rem; }
+  .live i { width: 8px; height: 8px; border-radius: 50%; background: #fff; animation: kedip 1.1s ease-in-out infinite; }
+  .live.jeda { background: var(--rule-2); color: var(--ink-2); }
+  .live.jeda i { animation: none; background: var(--ink-2); }
+  @keyframes kedip { 0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(255,255,255,.7); } 50% { opacity: .25; box-shadow: 0 0 0 5px rgba(255,255,255,0); } }
+  @media (prefers-reduced-motion: reduce) { .live i { animation: none; } }
+  .hitung b { color: var(--ink); font-weight: 700; font-size: 1rem; letter-spacing: 0.02em; }
   .garis { margin-inline: calc(100% / 12); }
   .st .ket b { color: var(--accent); font-weight: 600; }
-  #p-bahan > .blok:first-child, #p-video > .blok:first-child { margin-top: 0; }
+  .lembar > .blok:first-child { margin-top: 0; }
   /* video sebagai daftar ringkas memanjang ke bawah (masukan pemilik 27 Oktober 2026, layout_output_video.png) */
   .galeri { display: flex; flex-direction: column; gap: 0; }
   .galeri > .item { display: grid; grid-template-columns: 60px minmax(0, 1fr) auto; grid-template-areas: "g j b" "g m b"; column-gap: 16px; row-gap: 4px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--rule); }
@@ -300,6 +309,7 @@
   <section class="tajuk" aria-label="Tentang halaman ini">
     <p class="nama">garis<span>besar</span>nya</p>
     <p class="sub">Storytelling with Video Automation</p>
+    <p class="denyut" id="denyut" aria-live="off"><span class="live" id="live"><i aria-hidden="true"></i><b id="live-teks">LIVE</b></span><span class="hitung"><span id="hitung-label">memuat jadwal…</span> <b id="hitung-sisa" class="mono"></b></span></p>
   </section>
   <header class="kepala">
     <div>
@@ -355,8 +365,6 @@
   </section>
 
   <section class="lembar" id="p-draf" role="tabpanel" hidden>
-    <h2 id="j-draf">Draft</h2>
-    <p class="lead">Gerbang 1: tiga usulan topik dikirim tiap pagi, pemilik memilih satu dengan ACC atau meminta tiga lain dengan GANTI. Gerbang 2: sesudah dipilih, GPT menulis naskah (berita diceritakan apa adanya) dan storyboard digambar per adegan, lalu dikirim untuk ACC atau REVISI. Klik baris untuk membuka isinya. Yang sedang dibuat terbuka sendiri, panelnya muncul satu per satu begitu jadi.</p>
     <div class="blok">
       <h3>Storyboard dan naskah <span>status gerbang di kolom kedua</span></h3>
       <div class="scroll"><table id="draf">
@@ -378,8 +386,6 @@
   </section>
 
   <section class="lembar" id="p-konfirmasi_draf" role="tabpanel" hidden>
-    <h2 id="j-konfirmasi-draf">Konfirmasi draft lewat WhatsApp</h2>
-    <p class="lead">Usulan topik, naskah, dan storyboard yang sudah sampai di WhatsApp pemilik dan belum dijawab. ACC memilih atau menyetujui, REVISI memperbaiki sesuai catatan (paling banyak tiga kali), GANTI meminta usulan lain, HENTIKAN membatalkan.</p>
     <div class="blok">
       <div class="scroll"><table id="konfirmasi_draf">
         <thead><tr><th>Kode</th><th>Gerbang</th><th>Judul</th><th>Dikirim ke WA</th></tr></thead>
@@ -389,8 +395,6 @@
   </section>
 
   <section class="lembar" id="p-konfirmasi" role="tabpanel" hidden>
-    <h2 id="j-konfirmasi">Konfirmasi final lewat WhatsApp</h2>
-    <p class="lead">Video jadi yang sudah sampai di WhatsApp pemilik dan belum dijawab. ACC menerbitkan (kalau akun garisbesarnya sudah tersambung di Postiz), REVISI meneruskan catatan ke pembuatan video, HENTIKAN membatalkan.</p>
     <div class="blok">
       <div class="scroll"><table id="konfirmasi">
         <thead><tr><th>Kode</th><th>Gerbang</th><th>Judul</th><th>Dikirim ke WA</th></tr></thead>
@@ -407,8 +411,6 @@
   </section>
 
   <section class="lembar" id="p-terbit" role="tabpanel" hidden>
-    <h2 id="j-terbit">Terbit per platform</h2>
-    <p class="lead">Video yang disetujui di gerbang 3. Penjadwalan ke Instagram Reels, TikTok, YouTube Shorts, dan Threads lewat Postiz menyusul sesudah akun garisbesarnya tersambung, sampai saat itu statusnya siap terbit.</p>
     <div class="blok"><div class="galeri" id="arsip"><div class="state">memuat…</div></div></div>
   </section>
 
@@ -423,9 +425,6 @@
     </div>
   </dialog>
 
-  <footer>
-    Dibaca langsung dari basis data, baca saja, isi penuh bahan tidak dibuka. Jam dalam WIB. Pemantauan berita, kurasi, dan usulan topik 06.00. Naskah, storyboard, dan video dibuat sesudah pemilik membalas di WhatsApp.
-  </footer>
 </div>
 
 <script>
@@ -523,6 +522,28 @@
   // sebutan kode tersembunyi di teks data (alasan usulan, catatan arahan) diganti "cerita lain"
   function samarkan(t) { return DISEMBUNYIKAN.reduce(function (x, k) { return typeof x === "string" ? x.split(k).join("cerita lain") : x; }, t); }
   var CORONG = { bahan: null, baru: null, cerita: [] };
+  // Jadwal tetap: kurasi topik 06.00 WIB (DAG gb_harian), slot tayang 11.30 dan 18.30 WIB (gb/terbit.py JAM_SLOT).
+  var JADWAL = [[6, 0, "Usulan topik berikutnya"], [11, 30, "Tayang berikutnya"], [18, 30, "Tayang berikutnya"]];
+  function wibKeUtc(s) { var m = String(s || "").match(/^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})/); return m ? Date.UTC(+m[1], m[2] - 1, +m[3], +m[4] - 7, +m[5]) : 0; }
+  function jadwalBerikut(now) {
+    var w = new Date(now + 7 * 3600e3), dasar = Date.UTC(w.getUTCFullYear(), w.getUTCMonth(), w.getUTCDate()) - 7 * 3600e3;
+    for (var hari = 0; hari < 2; hari++) for (var i = 0; i < JADWAL.length; i++) {
+      var t = dasar + hari * 864e5 + (JADWAL[i][0] * 60 + JADWAL[i][1]) * 6e4;
+      if (t > now) return { t: t, label: JADWAL[i][2], jam: ("0" + JADWAL[i][0]).slice(-2) + "." + ("0" + JADWAL[i][1]).slice(-2) };
+    }
+  }
+  function isiDenyut() {
+    var now = Date.now(), akhir = 0;
+    CORONG.cerita.forEach(function (c) { akhir = Math.max(akhir, wibKeUtc(c.dikirim_wib), wibKeUtc(c.dibuat_wib), wibKeUtc((c.progres || {}).diubah_wib)); });
+    var hidup = akhir && now - akhir < 26 * 3600e3;
+    el("live").classList.toggle("jeda", !hidup);
+    el("live-teks").textContent = hidup ? "LIVE" : "JEDA";
+    el("live").title = akhir ? "aktivitas terakhir " + fmtPukul(new Date(akhir + 7 * 3600e3).toISOString().replace("T", " ")) : "belum ada aktivitas";
+    var j = jadwalBerikut(now), d = Math.max(0, Math.floor((j.t - now) / 1000));
+    el("hitung-label").textContent = j.label + " " + j.jam + " WIB dalam";
+    el("hitung-sisa").textContent = ("0" + Math.floor(d / 3600)).slice(-2) + ":" + ("0" + Math.floor(d % 3600 / 60)).slice(-2) + ":" + ("0" + d % 60).slice(-2);
+  }
+  setInterval(function () { if (!document.hidden) isiDenyut(); }, 1000);
   function isiSungai() {
     var rows = CORONG.cerita;
     var n = function (st) { return rows.filter(function (c) { return st.indexOf(c.status) >= 0; }).length; };
@@ -544,10 +565,6 @@
     el("k4").innerHTML = '<span class="dot ' + (tunggu ? "warn" : "") + '"></span>' + (tunggu ? "video menunggu balasan WA" : "tidak ada video yang menunggu");
     el("c5").textContent = id_(terbit);
     el("k5").innerHTML = '<span class="dot ' + (n(["terbit"]) ? "ok" : (terbit ? "warn" : "")) + '"></span>' + (terbit ? n(["siap_terbit"]) + " siap terbit, Postiz menyusul" : "belum ada yang tayang");
-    el("j-draf").innerHTML = "<b>" + id_(draf) + "</b> storyboard dan naskah, <b>" + usulanTunggu + "</b> usulan topik menunggu dipilih";
-    el("j-konfirmasi-draf").innerHTML = tungguDraf ? "<b>" + tungguDraf + "</b> draft menunggu balasan di WhatsApp" : "<b>Tidak ada</b> draft yang menunggu balasan";
-    el("j-konfirmasi").innerHTML = tunggu ? "<b>" + tunggu + "</b> video menunggu balasan di WhatsApp" : "<b>Tidak ada</b> video yang menunggu balasan";
-    el("j-terbit").innerHTML = terbit ? "<b>" + terbit + "</b> video disetujui" : "<b>Belum ada</b> video yang disetujui";
     tulisKetProses();
     var hidup = [CORONG.bahan > 0, draf + usulanTunggu > 0, tungguDraf + video > 0, video > 0, tunggu + terbit > 0, terbit > 0];
     var k = 0; while (k < hidup.length && hidup[k]) k++;
@@ -1063,6 +1080,7 @@
     progresAktif = {};
     rows.forEach(function (c) { c.alasan_status = samarkan(c.alasan_status); CERITA[c.kode] = c; statusDikenal[c.kode] = c.status; });
     CORONG.cerita = rows;
+    isiDenyut();
     gambarDraf(rows); gambarUsulan(rows); gambarGaleri(rows); gambarTerbit(rows); gambarKonfirmasi(rows);
     isiSungai();
     segarkanProgres();
