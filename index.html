@@ -354,11 +354,19 @@
   .pagar-b { color: var(--bad); } .pagar-p { color: var(--warn); }
   .pemutar-kecil { position: relative; display: block; width: 100%; aspect-ratio: 9 / 16; border-radius: 10px; overflow: hidden; background: #0B0B0A; border: 1px solid var(--gold); }
   .pemutar-kecil img { width: 100%; height: 100%; object-fit: cover; opacity: .45; display: block; }
-  .pemutar-kecil .tumpang { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 18px; color: #EDE6D6; font-size: 0.76rem; text-align: center; gap: 4px; }
-  .pemutar-kecil .persen-besar { font-family: var(--judul); font-weight: 800; font-size: 2.4rem; line-height: 1; color: #F5C518; }
-  .pemutar-kecil .garis-render { position: absolute; left: 0; bottom: 0; height: 4px; width: 0; background: #F5C518; transition: width .45s linear; }
-  .pemutar-kecil .gelombang { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; gap: 5px; }
-  .pemutar-kecil .gelombang i { width: 5px; height: 44px; background: #F5C518; border-radius: 3px; animation: gelombang 1s ease-in-out infinite; }
+  .pemutar-kecil .tumpang { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 14px; color: #EDE6D6; font-size: 0.76rem; text-align: center; gap: 14px; background: radial-gradient(circle at 50% 50%, rgba(11,11,10,.55) 0, rgba(11,11,10,.15) 60%, transparent 80%); }
+  .pemutar-kecil .cincin { position: relative; width: min(46%, 132px); aspect-ratio: 1; display: grid; place-items: center; }
+  .pemutar-kecil .cincin svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+  .pemutar-kecil .cincin .jalur { fill: none; stroke: rgba(237,230,214,.16); stroke-width: 3; }
+  .pemutar-kecil .cincin .maju { fill: none; stroke: #F5C518; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: 100; transition: stroke-dashoffset .45s linear; }
+  .pemutar-kecil .cincin .putar { position: absolute; inset: -7px; border-radius: 50%; border: 1px solid transparent; border-top-color: rgba(245,197,24,.55); animation: putar-muat 1.6s linear infinite; }
+  @keyframes putar-muat { to { transform: rotate(360deg); } }
+  .pemutar-kecil .persen-besar { font-family: var(--judul); font-weight: 800; font-size: clamp(1.4rem, 3vw, 2rem); line-height: 1; color: #F5C518; font-variant-numeric: tabular-nums; }
+  .pemutar-kecil .ket-pemutar { max-width: 90%; line-height: 1.4; opacity: .85; }
+  @media (prefers-reduced-motion: reduce) { .pemutar-kecil .cincin .putar { animation: none; } }
+  .pemutar-kecil .garis-render { display: none; position: absolute; left: 0; bottom: 0; height: 4px; width: 0; background: #F5C518; transition: width .45s linear; }
+  .pemutar-kecil .gelombang { position: absolute; left: 0; right: 0; bottom: 12%; height: 44px; display: none; align-items: center; justify-content: center; gap: 5px; }
+  .pemutar-kecil .gelombang i { width: 4px; height: 30px; background: #F5C518; border-radius: 3px; animation: gelombang 1s ease-in-out infinite; }
   .pemutar-kecil .gelombang i:nth-child(2) { animation-delay: .15s; } .item .pemutar-kecil .gelombang i:nth-child(3) { animation-delay: .3s; }
   .pemutar-kecil .gelombang i:nth-child(4) { animation-delay: .45s; } .item .pemutar-kecil .gelombang i:nth-child(5) { animation-delay: .6s; }
   .item .sampul-video { aspect-ratio: 9 / 16; }
@@ -753,6 +761,7 @@
     return String(t || "").replace(/\s*\([^)]*(Claude|GPT|ElevenLabs|Google News|OpenAI|DeepSeek)[^)]*\)/gi, "")
       .replace(/\b(Claude Code|Claude|GPT|ElevenLabs|Google News|OpenAI|DeepSeek)\b,?\s*/gi, "").replace(/bahan dan storyboard\.json/gi, "bahan video").replace(/storyboard\.json/gi, "storyboard").trim();
   }
+  var CINCIN = '<span class="cincin"><span class="putar" aria-hidden="true"></span><svg viewBox="0 0 36 36" aria-hidden="true"><circle class="jalur" cx="18" cy="18" r="15.9155"/><circle class="maju" cx="18" cy="18" r="15.9155"/></svg><b class="persen-besar">0%</b></span>';
   function bagian(persen, a, b) { return Math.max(0, Math.min(1, (persen - a) / (b - a))); }
   function blokProgres(kode) {
     return '<div class="progres" data-progres="' + esc(kode) + '"><div class="baris"><span class="langkah"></span><b class="angka"></b></div>' +
@@ -837,6 +846,7 @@
         }
         pm.querySelector(".gelombang").style.display = /suara/.test(p.langkah || "") && !p.selesai ? "flex" : "none";
         pm.querySelector(".persen-besar").textContent = persen + "%";
+        pm.querySelector(".cincin .maju").style.strokeDashoffset = 100 - persen;
         pm.querySelector(".ket-pemutar").textContent = p.galat ? "gagal" : (p.bingkai_dari && /render/.test(p.langkah || "")
           ? "bingkai " + id_(p.bingkai_ke) + " dari " + id_(p.bingkai_dari) : tanpaMerek(p.langkah));
         pm.querySelector(".garis-render").style.width = persen + "%";
@@ -1104,7 +1114,7 @@
       progresAktif[c.kode] = c.progres;
       pemutar = '<button type="button" class="pemutar buka" data-kode="' + esc(c.kode) + '" aria-label="Lihat kemajuan video ' + esc(c.kode) + '"><span class="pemutar-kecil" data-pemutar="' + esc(c.kode) + '">' +
         '<img alt="" hidden><span class="gelombang" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>' +
-        '<span class="tumpang"><b class="persen-besar">0%</b><span class="ket-pemutar"></span></span><span class="garis-render"></span></span></button>';
+        '<span class="tumpang">' + CINCIN + '<span class="ket-pemutar"></span></span><span class="garis-render"></span></span></button>';
     } else if (v.path) {
       pemutar = '<div class="pemutar"><video controls playsinline preload="none"' + (poster ? ' poster="' + esc(poster) + '"' : "") + ' src="' + esc(PUBLIK + "gb-video/" + v.path) + '"></video>' +
         '<span class="lencana">▶ v' + esc(v.versi) + " · " + Math.floor(menit / 60) + ":" + ("0" + menit % 60).slice(-2) + "</span></div>";
@@ -1229,7 +1239,7 @@
     var kiri, kanan;
     if (proses) {
       kiri = '<span class="pemutar-kecil" data-pemutar="' + esc(kode) + '" style="display:block;border-radius:10px"><img alt="Bingkai terakhir yang dirender" hidden><span class="gelombang" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>' +
-        '<span class="tumpang"><b class="persen-besar">0%</b><span class="ket-pemutar"></span></span><span class="garis-render"></span></span>';
+        '<span class="tumpang">' + CINCIN + '<span class="ket-pemutar"></span></span><span class="garis-render"></span></span>';
       kanan = blokProgres(kode) + '<ol class="langkah-video" data-langkah-video="' + esc(kode) + '">' + TAHAP_VIDEO.map(function (s) {
         return '<li data-rentang="' + s[1] + "-" + s[2] + '"><span class="tanda">○</span><span class="nama">' + esc(s[0]) + "<small>" + esc(s[3]) + '</small></span><span class="bilah-kecil"><span class="isi"></span></span><span class="angka-tahap">0%</span></li>';
       }).join("") + "</ol>";
