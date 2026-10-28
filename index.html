@@ -210,32 +210,32 @@
   .fc-legenda .l-kep { width: 12px; transform: rotate(45deg); margin: 0 5px; }
   dialog.info { width: min(980px, calc(100vw - 32px)); }
   ol.fc { list-style: none; margin: 0; padding: 0; }
-  .fc-jalur { display: grid; grid-template-columns: 2fr 1fr; margin-top: 14px; }
+  .fc-jalur { display: grid; grid-template-columns: 8fr 7fr; margin-top: 14px; }
   .lajur { display: flex; flex-direction: column; border: 1.5px solid var(--rule-2); padding: 0 16px; --x: 25%; }
   .lajur + .lajur { border-left: 0; }
-  .lajur.manual { --x: 50%; background: color-mix(in srgb, var(--kuning) 7%, var(--bg)); }
+  .lajur.manual { --x: calc(50% * 6 / 11); background: color-mix(in srgb, var(--kuning) 7%, var(--bg)); }
   .lajur h6 { margin: 0 -16px 16px; padding: 7px 16px; border-bottom: 1.5px solid var(--rule-2); font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); text-align: center; }
   .tarik { position: relative; flex: 1; min-height: 6px; }
-  .tarik::after { content: ""; position: absolute; left: var(--x); top: 0; bottom: 0; border-left: 1.5px solid var(--ink); }
+  .tarik::after { content: ""; position: absolute; left: calc(var(--x) - .75px); top: 0; bottom: 0; border-left: 1.5px solid var(--ink); }
   .fc-bersama { --x: 50%; }
   .fc-baris { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; padding-bottom: 30px; }
   .fc-baris > .fc { grid-column: 1; justify-self: center; }
-  .fc-baris::after { content: ""; position: absolute; left: var(--x); bottom: 4px; height: 22px; border-left: 1.5px solid var(--ink); }
-  .fc-baris::before { content: ""; position: absolute; left: calc(var(--x) - 5px); bottom: 0; border: 5px solid transparent; border-top: 7px solid var(--ink); border-bottom: 0; }
+  .fc-baris::after { content: ""; position: absolute; left: calc(var(--x) - .75px); bottom: 0; height: 30px; border-left: 1.5px solid var(--ink); }
+  .fc-baris::before { content: ""; position: absolute; left: calc(var(--x) - 5px); bottom: -1px; border: 5px solid transparent; border-top: 8px solid var(--ink); border-bottom: 0; z-index: 1; }
   .lajur .fc-baris:last-child::before { display: none; }
   .lajur .fc-baris:last-child::after { bottom: 0; height: 30px; }
   .fc-bersama .fc-baris:last-child::before, .fc-bersama .fc-baris:last-child::after { display: none; }
   .fc-bersama .fc-baris { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .fc-bersama .fc-baris > .fc { grid-column: 2; }
   .fc-bersama .fc-sisi { grid-column: 3; }
-  .lajur.manual .fc-baris { grid-template-columns: 1fr; }
-  .fc-gabung { position: relative; height: 44px; }
+  .lajur.manual .fc-baris { grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); }
+  .fc-gabung { position: relative; z-index: 2; height: 44px; }
   .fc-gabung i { position: absolute; display: block; }
-  .fc-gabung .g-a { left: calc((100% * 2 / 3 - 32px) / 4 + 16px); top: 0; height: 20px; border-left: 1.5px solid var(--ink); }
-  .fc-gabung .g-m { left: calc(100% * 5 / 6); top: 0; height: 20px; border-left: 1.5px solid var(--ink); }
-  .fc-gabung .g-h { left: calc((100% * 2 / 3 - 32px) / 4 + 16px); right: calc(100% / 6); top: 20px; border-top: 1.5px solid var(--ink); }
-  .fc-gabung .g-t { left: 50%; top: 20px; height: 17px; border-left: 1.5px solid var(--ink); }
-  .fc-gabung .g-t::after { content: ""; position: absolute; left: -6px; bottom: -7px; border: 5px solid transparent; border-top: 7px solid var(--ink); border-bottom: 0; }
+  .fc-gabung .g-a { left: calc((100% * 8 / 15 - 32px) / 4 + 16px - .75px); top: 0; height: 20px; border-left: 1.5px solid var(--ink); }
+  .fc-gabung .g-m { left: calc(100% * 8 / 15 + 16px + (100% * 7 / 15 - 32px) * 3 / 11 - .75px); top: 0; height: 20px; border-left: 1.5px solid var(--ink); }
+  .fc-gabung .g-h { left: calc((100% * 8 / 15 - 32px) / 4 + 16px - .75px); right: calc(100% * 7 / 15 - 16px - (100% * 7 / 15 - 32px) * 3 / 11 - .75px); top: 19.25px; border-top: 1.5px solid var(--ink); }
+  .fc-gabung .g-t { left: calc(50% - .75px); top: 20px; height: 16px; border-left: 1.5px solid var(--ink); }
+  .fc-gabung .g-t::after { content: ""; position: absolute; left: -5.25px; bottom: -8px; border: 5px solid transparent; border-top: 8px solid var(--ink); border-bottom: 0; }
   .fc-gabung span { display: none; }
   div.fc { position: relative; width: 100%; text-align: center; padding: 10px 14px; border: 1.5px solid var(--ink); background: var(--bg); color: var(--ink); }
   div.fc b { display: block; font-size: .9rem; }
@@ -245,25 +245,30 @@
   div.fc.proses { border-radius: 3px; }
   div.fc.io { transform: skewX(-12deg); padding: 10px 22px; }
   div.fc.io > span { display: block; transform: skewX(12deg); }
-  div.fc.kep { border: 0; background: none; height: 110px; display: grid; place-items: center; padding: 0; }
-  div.fc.kep .wajik { position: absolute; top: 0; left: 50%; width: 220px; height: 100%; transform: translateX(-50%); overflow: visible; }
+  div.fc.kep { --w: 220px; border: 0; background: none; min-height: 110px; align-self: stretch; padding: 0; }
+  div.fc.kep .wajik { position: absolute; top: 0; left: 50%; width: var(--w); height: 110px; transform: translateX(-50%); overflow: visible; }
   div.fc.kep .wajik polygon { fill: var(--bg); stroke: var(--ink); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
-  div.fc.kep > span { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 140px; }
-  .cabang-kanan div.fc.kep::after { content: ""; position: absolute; top: 50%; left: calc(50% + 110px); right: 0; border-top: 1.5px solid var(--ink); }
+  div.fc.kep::before { content: ""; position: absolute; left: calc(50% - .75px); top: 110px; bottom: 0; border-left: 1.5px solid var(--ink); }
+  div.fc.kep > span { position: absolute; left: 50%; top: 55px; transform: translate(-50%, -50%); width: calc(var(--w) - 80px); }
+  .cabang-kanan div.fc.kep::after { content: ""; position: absolute; top: 54.25px; left: calc(50% + var(--w) * .48 - 1px); right: 0; border-top: 1.5px solid var(--ink); }
   .kamu div.fc.kep .wajik polygon { fill: color-mix(in srgb, var(--kuning) 22%, var(--bg)); stroke: var(--kuning); stroke-width: 2.5; }
-  .fc-sisi { grid-column: 2; display: flex; align-items: center; }
+  .fc-sisi { grid-column: 2; display: flex; align-items: center; align-self: start; position: relative; top: 55px; transform: translateY(-50%); }
   .fc-sisi div.fc { flex: 1; }
   .panah-kanan { position: relative; flex: none; width: 74px; height: 1.5px; background: var(--ink); font-size: 0; }
   .panah-kanan::before { content: attr(data-label); position: absolute; left: 0; right: 0; bottom: 5px; text-align: center; font-size: .72rem; font-weight: 700; color: var(--ink-2); white-space: nowrap; }
   .panah-kanan::after { content: ""; position: absolute; right: 0; top: -4.5px; border: 5px solid transparent; border-left: 7px solid var(--ink); border-right: 0; }
   .label-ya { position: absolute; left: calc(var(--x) + 8px); bottom: 8px; font-size: .72rem; font-weight: 700; color: var(--ink-2); }
   /* lajur sempit (jalur manual) dan HP: satu kolom, cabang turun bergaris putus */
-  .lajur.manual .fc-sisi { grid-column: 1; flex-direction: column; align-items: stretch; position: relative; margin: 10px 0 0 22px; padding: 22px 0 0 12px; border-left: 1.5px dashed var(--ink-3); }
-  .lajur.manual div.fc.kep::after { display: none; }
-  .lajur.manual .panah-kanan { position: absolute; left: 12px; top: 0; width: auto; height: auto; background: none; }
-  .lajur.manual .panah-kanan::before { position: static; display: block; text-align: left; content: attr(data-label) " →"; }
-  .lajur.manual .panah-kanan::after { display: none; }
+  .lajur.manual div.fc.kep { --w: 190px; }
+  .lajur.manual .panah-kanan { width: 34px; }
+  .lajur.manual div.fc.io { padding: 8px 16px; }
   @media (max-width: 760px) {
+    div.fc.kep::before { display: none; }
+    div.fc.kep { min-height: 110px; align-self: center; }
+    .fc-sisi, .fc-bersama .fc-sisi, .lajur.manual .fc-sisi { top: 0; transform: none; align-self: stretch; }
+    .lajur.manual .fc-baris { grid-template-columns: 1fr; }
+    .lajur.manual div.fc.kep { --w: 220px; }
+    .lajur.manual .panah-kanan { width: auto; }
     .fc-jalur { grid-template-columns: 1fr; gap: 14px; }
     .lajur, .lajur + .lajur { --x: 50%; border-left: 1.5px solid var(--rule-2); }
     .tarik, .lajur .fc-baris:last-child::after { display: none; }
