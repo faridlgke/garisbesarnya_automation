@@ -654,7 +654,7 @@
   var TAHAP = ["bahan", "draf", "konfirmasi_draf", "video", "konfirmasi", "terbit"];
   var STATUS_GB = {
     usulan: ["biru", "usulan, menunggu dipilih"], lewat: ["", "tidak dipilih"], dipilih: ["warn", "sedang dibuat"], pilih_naskah: ["biru", "tiga draf menunggu dipilih"],
-    draf: ["warn", "menunggu kirim"], dikirim: ["biru", "storyboard menunggu balasan"], revisi: ["warn", "sedang direvisi"],
+    draf: ["warn", "menunggu kirim"], dikirim: ["biru", "naskah menunggu balasan"], revisi: ["warn", "sedang direvisi"],
     setuju: ["warn", "video sedang dibuat"], video_dikirim: ["biru", "video menunggu balasan"], video_revisi: ["warn", "video sedang diperbaiki"],
     siap_terbit: ["ok", "siap terbit"], terbit: ["ok", "terbit"], tolak: ["bad", "tidak ACC"], dirender: ["ok", "dirender"]
   };
@@ -1137,7 +1137,8 @@
     }).join("");
     var pemeranDaftar = (c.pemeran || []).map(function (p) { return "<li><strong>" + esc(p.nama) + "</strong>: " + esc(p.rupa) + "</li>"; }).join("");
     return '<div class="rinci">' + (proses ? blokProgres(c.kode) : "") + (proses ? "" : spek) +
-      '<section style="grid-column:1/-1"><h6>Storyboard</h6>' + isiStory + "</section>" +
+      // sejak 28 Oktober 2026 draf tanpa storyboard: bagiannya hanya tampil untuk cerita lama yang punya panel
+      ((c.storyboard && c.storyboard.panel) || (proses && p.panel) ? '<section style="grid-column:1/-1"><h6>Storyboard</h6>' + isiStory + "</section>" : "") +
       '<section class="kol-slide"><h6>Naskah <span class="redup" style="text-transform:none;letter-spacing:0">kata layar di kanan</span></h6>' + isiNaskah + "</section>" +
       (proses ? '<section class="kol-cap"><h6>Topik</h6><p>' + esc(dekode(c.news_title)) + "</p>" + ((c.usulan || {}).pola ? '<div class="kotak"><h6>Pola</h6><p>' + esc(c.usulan.pola) + "</p></div>" : "") + "</section>"
         : '<section class="kol-cap"><h6>Caption Instagram</h6><div class="cap">' + (paragraf || '<p class="redup">Belum ada caption.</p>') + "</div>" +
