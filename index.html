@@ -511,8 +511,8 @@
       <li><b>Pemantauan berita</b><span class="jam">06.00 WIB</span><p>Sepuluh sumber Google News: delapan tema (berita utama, nasional, kebijakan, anggaran, janji, hukum, harga, tambang dan lahan), cerita warga, dan liputan panjang (Mongabay, Project Multatuli, Tirto, Tempo). Isi tiap artikel diambil dan disimpan.</p></li>
       <li><b>Triase</b><p>Judul dan ringkasan tiap berita dinilai, berita dikelompokkan per topik, satu wakil per kelompok dengan skor tertinggi.</p></li>
       <li><b>Saring</b><p>Dibuang: topik karhutla dan kabut asap, berita yang sudah pernah dikerjakan atau diusulkan, dan kelompok topik yang dipakai lima hari terakhir.</p></li>
-      <li><b>Kurasi</b><span class="jam">GPT</span><p>Sampai 24 calon dari tiga hari terakhir dinilai 1 sampai 5 pada delapan patokan: fakta yang janggal, sebab dan akibat jelas, orang biasa yang menanggung disebut di berita, bisa digambar, kaya detail, layak motion (benda kunci, ruang, perubahan, momen 3D), poin satu kalimat, aman secara fakta. Lolos kalau semuanya bernilai 3 atau lebih.</p></li>
-      <li class="cabang"><b>Kurang dari tiga yang lolos?</b><p>Bank cerita mundur ke 7 hari, lalu ke 30 hari. Kalau masih kurang, <i>kilas balik</i>: GPT mengusulkan kejadian nyata yang lebih lama dan beritanya wajib ditemukan di Google News; yang tidak ada beritanya dibuang. Kalau tetap tidak ada yang layak, hari itu tidak ada usulan.</p></li>
+      <li><b>Kurasi</b><p>Sampai 24 calon dari tiga hari terakhir dinilai 1 sampai 5 pada delapan patokan: fakta yang janggal, sebab dan akibat jelas, orang biasa yang menanggung disebut di berita, bisa digambar, kaya detail, layak motion (benda kunci, ruang, perubahan, momen 3D), poin satu kalimat, aman secara fakta. Lolos kalau semuanya bernilai 3 atau lebih.</p></li>
+      <li class="cabang"><b>Kurang dari tiga yang lolos?</b><p>Bank cerita mundur ke 7 hari, lalu ke 30 hari. Kalau masih kurang, <i>kilas balik</i>: sistem mengusulkan kejadian nyata yang lebih lama dan beritanya wajib ditemukan di Google News; yang tidak ada beritanya dibuang. Kalau tetap tidak ada yang layak, hari itu tidak ada usulan.</p></li>
       <li><b>Ragam dan kembar</b><p>Berita kembar (judul atau kalimat ceritanya mirip) disaring. Kalimat "kenapa" tiap topik memakai bentuk berbeda dan tidak mengulang pola seminggu terakhir. Beberapa kejadian berpola sama boleh digabung jadi satu cerita (🧩).</p></li>
       <li><b>Kartu usulan ke WhatsApp</b><p>Tiga topik terbaik: judul asli berita dan tautannya, kalimat cerita (siapa, di mana, apa yang ganjil), dan kenapa ini membuat kaget atau marah. Titipan lewat <code>TOPIK &lt;tautan&gt;</code> masuk jalur yang sama kapan saja.</p></li>
       <li class="kamu"><b>Kamu memilih</b><p>ACC satu topik, GANTI untuk tiga lain, atau HENTIKAN.</p></li>
@@ -718,7 +718,7 @@
     el("c4").textContent = id_(finalKirim);
     el("k4").innerHTML = '<span class="dot ' + (tunggu ? "warn" : "") + '"></span>' + (tunggu ? "video menunggu balasan WA" : "tidak ada video yang menunggu");
     el("c5").textContent = id_(terbit);
-    el("k5").innerHTML = '<span class="dot ' + (n(["terbit"]) ? "ok" : (terbit ? "warn" : "")) + '"></span>' + (terbit ? n(["siap_terbit"]) + " siap terbit, Postiz menyusul" : "belum ada yang tayang");
+    el("k5").innerHTML = '<span class="dot ' + (n(["terbit"]) ? "ok" : (terbit ? "warn" : "")) + '"></span>' + (terbit ? n(["siap_terbit"]) + " menunggu jadwal" : "belum ada yang tayang");
     tulisKetProses();
     var hidup = [pilihan + usulanTunggu > 0, draf + usulanTunggu > 0, drafKirim > 0, video > 0, finalKirim > 0, terbit > 0];
     var k = 0; while (k < hidup.length && hidup[k]) k++;
@@ -747,8 +747,12 @@
     return Math.min(100, Math.round(persen));
   }
   var TAHAP_CERITA = [["naskah", 3, 40], ["storyboard", 40, 92], ["kirim WhatsApp", 92, 100]];
-  var TAHAP_VIDEO = [["Membacakan suara", 25, 45, "ElevenLabs, perkiraan waktu"], ["Merender video", 45, 85, "per bingkai nyata"],
+  var TAHAP_VIDEO = [["Membacakan suara", 25, 45, "perkiraan waktu"], ["Merender video", 45, 85, "per bingkai nyata"],
     ["Lembar cek tampilan", 85, 90, "bingkai rata dan puncak gerak"], ["Mengunggah video", 90, 96, "ke gb-video"], ["Mengirim ke WhatsApp", 96, 100, "video, lembar cek, perintah"]];
+  function tanpaMerek(t) {
+    return String(t || "").replace(/\s*\([^)]*(Claude|GPT|ElevenLabs|Google News|OpenAI|DeepSeek)[^)]*\)/gi, "")
+      .replace(/\b(Claude Code|Claude|GPT|ElevenLabs|Google News|OpenAI|DeepSeek)\b,?\s*/gi, "").replace(/bahan dan storyboard\.json/gi, "bahan video").replace(/storyboard\.json/gi, "storyboard").trim();
+  }
   function bagian(persen, a, b) { return Math.max(0, Math.min(1, (persen - a) / (b - a))); }
   function blokProgres(kode) {
     return '<div class="progres" data-progres="' + esc(kode) + '"><div class="baris"><span class="langkah"></span><b class="angka"></b></div>' +
@@ -785,7 +789,7 @@
       el("k2").innerHTML = '<span class="dot ' + (tunggu ? "warn" : "ok") + '"></span>' + (tunggu ? tunggu + " usulan menunggu dipilih" : "usulan, naskah, storyboard");
     }
     if (videoJalan) {
-      el("k3").innerHTML = '<span class="dot warn"></span><b>' + hitungPersen(videoJalan) + "%</b> " + esc((videoJalan.langkah || "").toLowerCase());
+      el("k3").innerHTML = '<span class="dot warn"></span><b>' + hitungPersen(videoJalan) + "%</b> " + esc(tanpaMerek(videoJalan.langkah).toLowerCase());
     } else {
       var v = rows.filter(function (c) { return c.status === "video_dikirim"; }).length;
       el("k3").innerHTML = '<span class="dot ' + (v ? "warn" : "") + '"></span>' + (v ? v + " video menunggu ditonton" : "video motion");
@@ -799,7 +803,7 @@
       document.querySelectorAll('[data-progres="' + kode + '"]').forEach(function (e) {
         e.querySelector(".isi").style.width = persen + "%";
         e.querySelector(".angka").textContent = persen + "%";
-        var teks = p.galat ? "gagal: " + p.galat : p.langkah;
+        var teks = p.galat ? "gagal: " + tanpaMerek(p.galat) : tanpaMerek(p.langkah);
         if (p.panel && /storyboard/.test(p.langkah || "")) teks += " · " + p.panel.filter(function (x) { return x.status === "jadi"; }).length + " dari " + p.panel.length + " panel jadi";
         e.querySelector(".langkah").textContent = teks;
         if (!/video/.test(p.tugas || "")) {
@@ -834,7 +838,7 @@
         pm.querySelector(".gelombang").style.display = /suara/.test(p.langkah || "") && !p.selesai ? "flex" : "none";
         pm.querySelector(".persen-besar").textContent = persen + "%";
         pm.querySelector(".ket-pemutar").textContent = p.galat ? "gagal" : (p.bingkai_dari && /render/.test(p.langkah || "")
-          ? "bingkai " + id_(p.bingkai_ke) + " dari " + id_(p.bingkai_dari) : (p.langkah || ""));
+          ? "bingkai " + id_(p.bingkai_ke) + " dari " + id_(p.bingkai_dari) : tanpaMerek(p.langkah));
         pm.querySelector(".garis-render").style.width = persen + "%";
       });
       document.querySelectorAll('[data-langkah-video="' + kode + '"] li').forEach(function (li) {
@@ -1015,7 +1019,7 @@
       "<div><h6>Inti cerita</h6><p>" + esc(c.kiasan_inti || (c.usulan || {}).kiasan || "–") + "</p><span>" + esc(c.premis || "") + "</span></div></div>";
     var isiStory = proses ? '<div class="papan" data-papan="' + esc(c.kode) + '" data-sidik="' + esc(sidikPapan(p)) + '">' + isiPapanProses(p) + "</div>"
       : '<div class="papan">' + storyboardJadi(c) + "</div>";
-    var isiNaskah = menulis ? '<div class="kerangka"><div class="kilau" style="width:92%"></div><div class="kilau" style="width:78%"></div><div class="kilau" style="width:86%"></div><div class="kilau" style="width:64%"></div><span>GPT sedang menulis enam konsep, menguji kejelasannya lewat penebak buta, menilai, lalu menulis tiga draf naskah. Biasanya lima sampai sepuluh menit.</span></div>' : naskahDaftar(c);
+    var isiNaskah = menulis ? '<div class="kerangka"><div class="kilau" style="width:92%"></div><div class="kilau" style="width:78%"></div><div class="kilau" style="width:86%"></div><div class="kilau" style="width:64%"></div><span>Sedang menulis enam konsep, menguji kejelasannya lewat penebak buta, menilai, lalu menulis tiga draf naskah. Biasanya lima sampai sepuluh menit.</span></div>' : naskahDaftar(c);
     var paragraf = String(cap.instagram || "").split(/\n\s*\n/).filter(Boolean).map(function (x) { return "<p>" + esc(x) + "</p>"; }).join("");
     var pagar = (pg.blokir || []).map(function (x) { return '<span class="pagar-b">⛔ ' + esc(x) + "</span>"; }).join("") + (pg.peringatan || []).map(function (x) { return '<span class="pagar-p">⚠ ' + esc(x) + "</span>"; }).join("");
     var papanTabel = (c.papan_adegan || []).map(function (a, i) { return "<tr><td>" + (i + 1) + "</td><td>" + esc((a.frasa || []).join(", ")) + "</td><td>" + esc(a.adegan) + "</td><td>" + esc(a.kamera) + "</td><td>" + esc(a.kuning) + "</td></tr>"; }).join("");
@@ -1120,7 +1124,7 @@
     var tb = v.terbit || {}, hasil = tb.hasil || {}, jadwal = tb.jadwal_utc ? new Date(tb.jadwal_utc).getTime() : 0;
     var chip = v.terbit ? '<div class="kanal-chip">' + KANAL.map(function (k) {
       var x = hasil[k[0]];
-      if (!x) return '<span title="akun belum tersambung di Postiz">' + k[1] + "</span>";
+      if (!x) return '<span title="akun belum tersambung">' + k[1] + "</span>";
       if (!x.ok) return '<span class="gagal" title="' + esc(x.pesan || "") + '">' + k[1] + " · gagal</span>";
       return '<span class="ok">' + k[1] + " · " + (jadwal && jadwal <= Date.now() ? "tayang" : "terjadwal " + esc(x.jadwal || "")) + "</span>";
     }).join("") + "</div>" : "";
@@ -1130,7 +1134,7 @@
       "<h3>" + esc(c.judul) + "</h3>" +
       '<div class="spek-kartu">' +
         (v.path ? "<div><h6>Durasi</h6><p>" + menit + " detik</p><span>1080 × 1920, 30 fps</span></div>" : "") +
-        "<div><h6>Narator</h6><p>" + esc(v.narator || "Dany Saputra") + "</p><span>ElevenLabs</span></div>" +
+        "<div><h6>Narator</h6><p>" + esc(v.narator || "Dany Saputra") + "</p></div>" +
         "<div><h6>Dibuat</h6><p>" + esc(dibuat) + "</p><span>versi " + esc(v.versi || "–") + "</span></div>" +
         "<div><h6>Sumber</h6><p>" + esc(String(c.penerbit || "–").replace(/\.(co\.id|com|id|net|org)$/i, "")) + "</p><span>" + esc(fmtHari(c.published_time)) + "</span></div>" +
       "</div>" + chip + rinci +
@@ -1190,7 +1194,7 @@
   }
   // Metadata video di dialog (pemilik 26 Oktober 2026: bukan sekadar tombol lembar cek):
   // judul, deskripsi, spesifikasi, kiasan, sumber informasi, kredit, status. Pola kotak .rinci BS.
-  var NARATOR = { elevenlabs: "ElevenLabs" };
+  var NARATOR = {};
   function metaVideo(c, v) {
     var cap = c.caption || {};
     var dibuat = v.dibuat_at ? fmtPukul(new Date(new Date(v.dibuat_at).getTime() + 7 * 3600e3).toISOString().replace("T", " ")) : "–";
@@ -1203,7 +1207,7 @@
       '<p style="margin:8px 0 0;color:var(--ink-2)">' + esc(c.premis || "") + "</p></section>" +
       '<div class="spek">' +
         "<div><h6>Durasi</h6><p>" + esc(Math.round(v.durasi || 0)) + " detik</p><span>versi " + esc(v.versi) + " · 720 × 1280, 30 fps</span></div>" +
-        "<div><h6>Narator</h6><p>" + esc(v.narator || (v.suara === "elevenlabs" ? "suara bawaan" : (v.suara || "–"))) + "</p><span>" + esc(NARATOR[v.suara] || "") + (c.jumlah_kata ? ", " + esc(c.jumlah_kata) + " kata" : "") + "</span></div>" +
+        "<div><h6>Narator</h6><p>" + esc(v.narator || "suara bawaan") + "</p><span>" + esc(NARATOR[v.suara] || "") + (c.jumlah_kata ? ", " + esc(c.jumlah_kata) + " kata" : "") + "</span></div>" +
         "<div><h6>Dibuat</h6><p>" + esc(dibuat) + "</p><span>" + esc((c.naskah || []).length) + " frasa" + (shot ? ", " + shot + " shot" : "") + "</span></div>" +
       "</div>" +
       '<section class="kol-slide"><h6>Inti cerita</h6><p style="margin:0">' + esc(c.kiasan_inti || "–") + "</p>" +
