@@ -201,18 +201,42 @@
   .lihat .kep .kode { margin-left: 8px; }
   .info-i { display: inline-grid; place-items: center; width: 17px; height: 17px; margin-left: 5px; border-radius: 50%; border: 1.5px solid currentColor; font-size: .68rem; font-weight: 800; font-style: italic; font-family: Georgia, serif; letter-spacing: 0; text-transform: none; vertical-align: 1px; cursor: help; }
   .info-i:hover, .info-i:focus-visible { background: var(--ink); color: var(--bg); border-color: var(--ink); outline: none; }
-  dialog.info { width: min(760px, calc(100vw - 32px)); overflow-y: auto; }
+  dialog.info { overflow-y: auto; }
   .fc-legenda { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 14px 0 4px; font-size: .74rem; color: var(--ink-2); }
   .fc-legenda span { display: inline-flex; align-items: center; gap: 6px; }
   .fc-legenda i { display: inline-block; width: 22px; height: 12px; border: 1.5px solid var(--ink); background: var(--bg); }
   .fc-legenda .l-term { border-radius: 999px; }
   .fc-legenda .l-io { transform: skewX(-18deg); }
   .fc-legenda .l-kep { width: 12px; transform: rotate(45deg); margin: 0 5px; }
-  ol.fc { list-style: none; margin: 14px 0 22px; padding: 0; }
+  dialog.info { width: min(980px, calc(100vw - 32px)); }
+  ol.fc { list-style: none; margin: 0; padding: 0; }
+  .fc-jalur { display: grid; grid-template-columns: 2fr 1fr; margin-top: 14px; }
+  .lajur { display: flex; flex-direction: column; border: 1.5px solid var(--rule-2); padding: 0 16px; --x: 25%; }
+  .lajur + .lajur { border-left: 0; }
+  .lajur.manual { --x: 50%; background: color-mix(in srgb, var(--kuning) 7%, var(--bg)); }
+  .lajur h6 { margin: 0 -16px 16px; padding: 7px 16px; border-bottom: 1.5px solid var(--rule-2); font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); text-align: center; }
+  .tarik { position: relative; flex: 1; min-height: 6px; }
+  .tarik::after { content: ""; position: absolute; left: var(--x); top: 0; bottom: 0; border-left: 1.5px solid var(--ink); }
+  .fc-bersama { --x: 50%; }
   .fc-baris { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; padding-bottom: 30px; }
   .fc-baris > .fc { grid-column: 1; justify-self: center; }
-  .fc-baris:not(:last-child)::after { content: ""; position: absolute; left: 25%; bottom: 4px; height: 22px; border-left: 1.5px solid var(--ink); }
-  .fc-baris:not(:last-child)::before { content: ""; position: absolute; left: calc(25% - 5px); bottom: 0; border: 5px solid transparent; border-top: 7px solid var(--ink); border-bottom: 0; }
+  .fc-baris::after { content: ""; position: absolute; left: var(--x); bottom: 4px; height: 22px; border-left: 1.5px solid var(--ink); }
+  .fc-baris::before { content: ""; position: absolute; left: calc(var(--x) - 5px); bottom: 0; border: 5px solid transparent; border-top: 7px solid var(--ink); border-bottom: 0; }
+  .lajur .fc-baris:last-child::before { display: none; }
+  .lajur .fc-baris:last-child::after { bottom: 0; height: 30px; }
+  .fc-bersama .fc-baris:last-child::before, .fc-bersama .fc-baris:last-child::after { display: none; }
+  .fc-bersama .fc-baris { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .fc-bersama .fc-baris > .fc { grid-column: 2; }
+  .fc-bersama .fc-sisi { grid-column: 3; }
+  .lajur.manual .fc-baris { grid-template-columns: 1fr; }
+  .fc-gabung { position: relative; height: 44px; }
+  .fc-gabung i { position: absolute; display: block; }
+  .fc-gabung .g-a { left: calc((100% * 2 / 3 - 32px) / 4 + 16px); top: 0; height: 20px; border-left: 1.5px solid var(--ink); }
+  .fc-gabung .g-m { left: calc(100% * 5 / 6); top: 0; height: 20px; border-left: 1.5px solid var(--ink); }
+  .fc-gabung .g-h { left: calc((100% * 2 / 3 - 32px) / 4 + 16px); right: calc(100% / 6); top: 20px; border-top: 1.5px solid var(--ink); }
+  .fc-gabung .g-t { left: 50%; top: 20px; height: 17px; border-left: 1.5px solid var(--ink); }
+  .fc-gabung .g-t::after { content: ""; position: absolute; left: -6px; bottom: -7px; border: 5px solid transparent; border-top: 7px solid var(--ink); border-bottom: 0; }
+  .fc-gabung span { display: none; }
   div.fc { position: relative; width: 100%; text-align: center; padding: 10px 14px; border: 1.5px solid var(--ink); background: var(--bg); color: var(--ink); }
   div.fc b { display: block; font-size: .9rem; }
   div.fc small { display: block; font-size: .76rem; line-height: 1.4; color: var(--ink-2); margin-top: 3px; }
@@ -229,23 +253,31 @@
   .kamu div.fc.kep .wajik polygon { fill: color-mix(in srgb, var(--kuning) 22%, var(--bg)); stroke: var(--kuning); stroke-width: 2.5; }
   .fc-sisi { grid-column: 2; display: flex; align-items: center; }
   .fc-sisi div.fc { flex: 1; }
-  .panah-kanan, .panah-kiri { position: relative; flex: none; width: 74px; height: 1.5px; background: var(--ink); font-size: 0; }
-  .panah-kanan::before, .panah-kiri::before { content: attr(data-label); position: absolute; left: 0; right: 0; bottom: 5px; text-align: center; font-size: .72rem; font-weight: 700; color: var(--ink-2); white-space: nowrap; }
+  .panah-kanan { position: relative; flex: none; width: 74px; height: 1.5px; background: var(--ink); font-size: 0; }
+  .panah-kanan::before { content: attr(data-label); position: absolute; left: 0; right: 0; bottom: 5px; text-align: center; font-size: .72rem; font-weight: 700; color: var(--ink-2); white-space: nowrap; }
   .panah-kanan::after { content: ""; position: absolute; right: 0; top: -4.5px; border: 5px solid transparent; border-left: 7px solid var(--ink); border-right: 0; }
-  .panah-kiri::after { content: ""; position: absolute; left: 0; top: -4.5px; border: 5px solid transparent; border-right: 7px solid var(--ink); border-left: 0; }
-  .label-ya { position: absolute; left: calc(25% + 8px); bottom: 8px; font-size: .72rem; font-weight: 700; color: var(--ink-2); }
-  @media (max-width: 640px) {
-    .fc-baris { grid-template-columns: 1fr; }
-    .fc-baris:not(:last-child)::after { left: 50%; }
-    .fc-baris:not(:last-child)::before { left: calc(50% - 5px); }
-    .label-ya { left: calc(50% + 8px); }
-    .fc-sisi { grid-column: 1; flex-direction: column; align-items: stretch; position: relative; margin: 10px 0 0 22px; padding: 22px 0 0 12px; border-left: 1.5px dashed var(--ink-3); }
+  .label-ya { position: absolute; left: calc(var(--x) + 8px); bottom: 8px; font-size: .72rem; font-weight: 700; color: var(--ink-2); }
+  /* lajur sempit (jalur manual) dan HP: satu kolom, cabang turun bergaris putus */
+  .lajur.manual .fc-sisi { grid-column: 1; flex-direction: column; align-items: stretch; position: relative; margin: 10px 0 0 22px; padding: 22px 0 0 12px; border-left: 1.5px dashed var(--ink-3); }
+  .lajur.manual div.fc.kep::after { display: none; }
+  .lajur.manual .panah-kanan { position: absolute; left: 12px; top: 0; width: auto; height: auto; background: none; }
+  .lajur.manual .panah-kanan::before { position: static; display: block; text-align: left; content: attr(data-label) " →"; }
+  .lajur.manual .panah-kanan::after { display: none; }
+  @media (max-width: 760px) {
+    .fc-jalur { grid-template-columns: 1fr; gap: 14px; }
+    .lajur, .lajur + .lajur { --x: 50%; border-left: 1.5px solid var(--rule-2); }
+    .tarik, .lajur .fc-baris:last-child::after { display: none; }
+    .fc-baris, .fc-bersama .fc-baris { grid-template-columns: 1fr; }
+    .fc-bersama .fc-baris > .fc { grid-column: 1; }
+    .fc-gabung { height: auto; padding: 12px 0 30px; text-align: center; }
+    .fc-gabung .g-a, .fc-gabung .g-m, .fc-gabung .g-h { display: none; }
+    .fc-gabung .g-t { top: auto; bottom: 4px; height: 22px; }
+    .fc-gabung span { display: block; font-size: .72rem; font-weight: 700; color: var(--ink-2); }
+    .fc-sisi, .fc-bersama .fc-sisi { grid-column: 1; flex-direction: column; align-items: stretch; position: relative; margin: 10px 0 0 22px; padding: 22px 0 0 12px; border-left: 1.5px dashed var(--ink-3); }
     .cabang-kanan div.fc.kep::after { display: none; }
-    .panah-kanan, .panah-kiri { position: absolute; left: 12px; top: 0; width: auto; height: auto; background: none; }
-    .panah-kanan::before, .panah-kiri::before { position: static; display: block; text-align: left; }
-    .panah-kanan::before { content: attr(data-label) " →"; }
-    .panah-kiri::before { content: "titipan " attr(data-label) " ke Kurasi ↑"; }
-    .panah-kanan::after, .panah-kiri::after { display: none; }
+    .panah-kanan { position: absolute; left: 12px; top: 0; width: auto; height: auto; background: none; }
+    .panah-kanan::before { position: static; display: block; text-align: left; content: attr(data-label) " →"; }
+    .panah-kanan::after { display: none; }
   }
   .alur { list-style: none; counter-reset: alur; margin: 18px 0 0; padding: 0; }
   .alur li { counter-increment: alur; position: relative; padding: 12px 14px 12px 52px; margin: 0 0 22px; border: 1px solid var(--rule); border-radius: 12px; background: var(--bg); }
@@ -561,28 +593,35 @@
   <dialog class="lihat info" id="info-bahan" aria-labelledby="info-bahan-judul">
     <div class="kep"><h4 id="info-bahan-judul">Cara topik dirumuskan sampai ke kamu</h4><button id="info-bahan-tutup" type="button" class="ghost">Tutup</button></div>
     <div class="fc-legenda" aria-hidden="true"><span><i class="l-term"></i>Mulai atau selesai</span><span><i class="l-io"></i>Masukan atau keluaran</span><span><i class="l-proses"></i>Proses</span><span><i class="l-kep"></i>Keputusan</span></div>
-    <ol class="fc" aria-label="Diagram alur perumusan topik">
-      <li class="fc-baris"><div class="fc term"><b>Mulai</b><small>tiap pagi 06.00 WIB</small></div></li>
-      <li class="fc-baris"><div class="fc io"><span><b>Berita masuk</b><small>sepuluh sumber Google News, isi tiap artikel disimpan</small></span></div></li>
-      <li class="fc-baris"><div class="fc proses"><b>Triase</b><small>judul dinilai, berita dikelompokkan per topik, satu wakil terbaik per kelompok</small></div></li>
-      <li class="fc-baris"><div class="fc proses"><b>Saring</b><small>buang karhutla, berita yang sudah pernah dipakai, dan topik lima hari terakhir</small></div></li>
-      <li class="fc-baris cabang-kanan"><div class="fc proses"><b>Kurasi</b><small>sampai 24 calon dinilai pada delapan patokan, lolos kalau semuanya 3 dari 5 atau lebih</small></div>
-        <div class="fc-sisi masuk"><span class="panah-kiri" data-label="masuk">masuk</span><div class="fc io"><span><b>Titipan kamu</b><small><code>TOPIK &lt;tautan&gt;</code> kapan saja</small></span></div></div></li>
-      <li class="fc-baris cabang-kanan"><div class="fc kep"><svg class="wajik" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><polygon points="50,2 98,50 50,98 2,50"/></svg><span><b>Tiga topik lolos?</b></span></div>
-        <div class="fc-sisi"><span class="panah-kanan" data-label="Tidak">Tidak</span><div class="fc proses"><b>Perluas bahan</b><small>bank cerita 7 lalu 30 hari, lalu kilas balik kejadian lama yang beritanya wajib ada di Google News, lalu dinilai ulang. Tetap tidak ada yang layak, hari itu tanpa usulan</small></div></div>
-        <span class="label-ya">Ya</span></li>
-      <li class="fc-baris"><div class="fc proses"><b>Ragam dan kembar</b><small>berita kembar disaring, kalimat "kenapa" tidak mengulang pola seminggu terakhir, kasus serupa boleh digabung</small></div></li>
-      <li class="fc-baris"><div class="fc io"><span><b>Kartu usulan ke kamu</b><small>tiga topik dengan judul asli berita, tautan, kalimat cerita, dan kenapa ini bikin kaget</small></span></div></li>
-      <li class="fc-baris cabang-kanan kamu"><div class="fc kep"><svg class="wajik" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><polygon points="50,2 98,50 50,98 2,50"/></svg><span><b>Kamu ACC?</b></span></div>
-        <div class="fc-sisi"><span class="panah-kanan" data-label="Tidak ACC">Tidak ACC</span><div class="fc proses"><b>Tiga topik lain</b><small>dikirim lagi ke kamu, atau hari itu tanpa topik</small></div></div>
-        <span class="label-ya">ACC</span></li>
-      <li class="fc-baris"><div class="fc proses"><b>Pengayaan bahan</b><small>sampai enam liputan lain tentang kejadian yang sama</small></div></li>
-      <li class="fc-baris"><div class="fc term"><b>Selesai</b><small>masuk tahap Draft</small></div></li>
-    </ol>
+    <div class="fc-jalur" aria-label="Diagram alur perumusan topik">
+      <section class="lajur otomatis"><h6>Jalur otomatis</h6><ol class="fc">
+        <li class="fc-baris"><div class="fc term"><b>Mulai otomatis</b><small>tiap pagi 06.00 WIB</small></div></li>
+        <li class="fc-baris"><div class="fc io"><span><b>Berita masuk</b><small>sepuluh sumber Google News, isi tiap artikel disimpan</small></span></div></li>
+        <li class="fc-baris"><div class="fc proses"><b>Triase</b><small>judul dinilai, berita dikelompokkan per topik, satu wakil terbaik per kelompok</small></div></li>
+        <li class="fc-baris"><div class="fc proses"><b>Saring</b><small>buang karhutla, berita yang sudah pernah dipakai, dan topik lima hari terakhir</small></div></li>
+        <li class="fc-baris"><div class="fc proses"><b>Kurasi</b><small>sampai 24 calon dinilai pada delapan patokan, lolos kalau semuanya 3 dari 5 atau lebih</small></div></li>
+        <li class="fc-baris cabang-kanan"><div class="fc kep"><svg class="wajik" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><polygon points="50,2 98,50 50,98 2,50"/></svg><span><b>Tiga topik lolos?</b></span></div><div class="fc-sisi"><span class="panah-kanan" data-label="Tidak">Tidak</span><div class="fc proses"><b>Perluas bahan</b><small>bank cerita 7 lalu 30 hari, lalu kilas balik kejadian lama yang beritanya wajib ada di Google News, lalu dinilai ulang. Tetap tidak ada yang layak, hari itu tanpa usulan</small></div></div><span class="label-ya">Ya</span></li>
+        <li class="fc-baris"><div class="fc proses"><b>Ragam dan kembar</b><small>berita kembar disaring, kalimat "kenapa" tidak mengulang pola seminggu terakhir, kasus serupa boleh digabung</small></div></li>
+      </ol><div class="tarik"></div></section>
+      <section class="lajur manual"><h6>Jalur manual</h6><ol class="fc">
+        <li class="fc-baris"><div class="fc term"><b>Mulai manual</b><small>kapan saja</small></div></li>
+        <li class="fc-baris"><div class="fc io"><span><b>Kamu kirim referensi</b><small><code>TOPIK &lt;tautan&gt;</code> berita yang kamu temukan sendiri</small></span></div></li>
+        <li class="fc-baris"><div class="fc proses"><b>Ambil isi berita</b><small>isi tautan dibaca dan disimpan. Kalau tidak terbaca, kamu diminta tautan lain</small></div></li>
+        <li class="fc-baris cabang-kanan"><div class="fc kep"><svg class="wajik" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><polygon points="50,2 98,50 50,98 2,50"/></svg><span><b>Pernah dikerjakan?</b></span></div><div class="fc-sisi"><span class="panah-kanan" data-label="Ya">Ya</span><div class="fc io"><span><b>Kabar kode lamanya</b><small>jalur berhenti di sini</small></span></div></div><span class="label-ya">Belum</span></li>
+        <li class="fc-baris"><div class="fc proses"><b>Kurasi</b><small>patokan yang sama dengan jalur otomatis. Bahan tipis tetap dikirim dengan peringatan</small></div></li>
+      </ol><div class="tarik"></div></section>
+    </div>
+    <div class="fc-gabung" aria-hidden="true"><i class="g-a"></i><i class="g-m"></i><i class="g-h"></i><i class="g-t"></i><span>kedua jalur bertemu di sini</span></div>
+    <div class="fc-bersama"><ol class="fc">
+        <li class="fc-baris"><div class="fc io"><span><b>Kartu usulan ke kamu</b><small>tiga topik pagi, atau satu topik titipanmu, dengan judul asli berita, tautan, kalimat cerita, dan kenapa ini bikin kaget</small></span></div></li>
+        <li class="fc-baris cabang-kanan kamu"><div class="fc kep"><svg class="wajik" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><polygon points="50,2 98,50 50,98 2,50"/></svg><span><b>Kamu ACC?</b></span></div><div class="fc-sisi"><span class="panah-kanan" data-label="Tidak ACC">Tidak ACC</span><div class="fc proses"><b>Tiga topik lain</b><small>dikirim lagi ke kamu, atau hari itu tanpa topik</small></div></div><span class="label-ya">ACC</span></li>
+        <li class="fc-baris"><div class="fc proses"><b>Pengayaan bahan</b><small>sampai enam liputan lain tentang kejadian yang sama</small></div></li>
+        <li class="fc-baris"><div class="fc term"><b>Selesai</b><small>masuk tahap Draft</small></div></li>
+    </ol></div>
     <div class="ket-data">
       <h5>Arti angka dan tabel di tab Bahan</h5>
       <ul>
-        <li><b>Bahan berita</b>: semua artikel yang pernah dipantau, dan berapa yang terbit dua hari terakhir.</li>
+        <li><b>Bahan berita</b>: semua artikel yang dipantau sejak pemantauan dimulai.</li>
         <li><b>Sumber dipantau</b>: jumlah sumber Google News yang aktif.</li>
         <li><b>Dinilai hari ini</b>: berita yang lolos triase pagi ini.</li>
         <li><b>Usulan dikirim</b>: topik yang dikirim ke kamu tujuh hari terakhir.</li>
@@ -716,7 +755,7 @@
     var usulan = rows.filter(function (c) { return c.batch_usulan && String(c.tanggal) >= seminggu; }).length;
     var pilih = rows.filter(dipilih), tayang = rows.filter(function (c) { return c.status === "terbit"; }).length;
     var kartu = [
-      [CORONG.bahan, "Bahan berita", CORONG.baru != null ? "+" + id_(CORONG.baru) + " dua hari terakhir" : ""],
+      [CORONG.bahan, "Bahan berita", Math.max(1, Math.ceil((Date.now() - Date.UTC(2026, 9, 24, 17)) / 864e5)) + " hari terakhir"],
       [SKOR.sumber, "Sumber dipantau", "Google News"],
       [SKOR.triase, "Dinilai hari ini", "triase pagi"],
       [usulan, "Usulan dikirim", "tujuh hari terakhir"],
