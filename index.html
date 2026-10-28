@@ -252,6 +252,10 @@
   .lipat-isi .tagar span { font-size: .76rem; padding: 2px 9px; border: 1px solid var(--rule); border-radius: 999px; color: var(--ink-2); }
   .lipat-isi .cek { display: flex; gap: 6px; flex-wrap: wrap; }
   .lipat-isi .cek img { width: 64px; height: 64px; object-fit: cover; border-radius: 6px; border: 1px solid var(--rule); display: block; }
+  .kanal-chip { display: flex; gap: 6px; flex-wrap: wrap; }
+  .kanal-chip span { font-size: .74rem; font-weight: 600; padding: 3px 10px; border-radius: 8px; background: var(--hover); color: var(--ink-2); }
+  .kanal-chip span.ok { background: #E9F2E4; color: var(--ok); }
+  .kanal-chip span.gagal { background: #F6E3E3; color: var(--bad); }
   .tombol-kartu { display: flex; gap: 10px; flex-wrap: wrap; margin-top: auto; }
   .tombol-kartu a, .tombol-kartu button { font: inherit; font-size: .85rem; font-weight: 600; padding: 8px 16px; border-radius: 999px; border: 1px solid var(--ink); color: var(--ink); background: transparent; text-decoration: none; cursor: pointer; }
   .tombol-kartu .utama { background: var(--ink); color: var(--bg); }
@@ -271,7 +275,7 @@
     .isi-kartu { display: contents; }
     .kartu-video .pemutar { grid-column: 1; grid-row: 1 / span 3; }
     .isi-kartu .atas, .isi-kartu h3, .spek-kartu { grid-column: 2; }
-    .lipat, .tombol-kartu { grid-column: 1 / -1; }
+    .lipat, .tombol-kartu, .kanal-chip { grid-column: 1 / -1; }
     .tombol-kartu { gap: 6px; flex-wrap: nowrap; }
     .tombol-kartu a, .tombol-kartu button { flex: 1 1 auto; text-align: center; padding: 7px 8px; white-space: nowrap; }
     .spek-kartu p { overflow-wrap: anywhere; }
@@ -995,6 +999,15 @@
       (cek.length ? '<h6>Lembar cek bingkai</h6><div class="cek">' + cek.map(function (q) {
         return '<a href="' + esc(PUBLIK + "gb-video/" + q) + '" target="_blank" rel="noopener noreferrer"><img loading="lazy" src="' + esc(PUBLIK + "gb-video/" + q) + '" alt="lembar cek"></a>'; }).join("") + "</div>" : "") +
       "</div></details>";
+    // status per platform dari gb_cerita.video.terbit (gb/terbit.py): terjadwal, tayang, gagal, atau belum tersambung
+    var KANAL = [["instagram", "Instagram"], ["tiktok", "TikTok"], ["youtube", "YouTube"], ["threads", "Threads"]];
+    var tb = v.terbit || {}, hasil = tb.hasil || {}, jadwal = tb.jadwal_utc ? new Date(tb.jadwal_utc).getTime() : 0;
+    var chip = v.terbit ? '<div class="kanal-chip">' + KANAL.map(function (k) {
+      var x = hasil[k[0]];
+      if (!x) return '<span title="akun belum tersambung di Postiz">' + k[1] + "</span>";
+      if (!x.ok) return '<span class="gagal" title="' + esc(x.pesan || "") + '">' + k[1] + " · gagal</span>";
+      return '<span class="ok">' + k[1] + " · " + (jadwal && jadwal <= Date.now() ? "tayang" : "terjadwal " + esc(x.jadwal || "")) + "</span>";
+    }).join("") + "</div>" : "";
     var dibuat = v.dibuat_at ? fmtPukul(new Date(new Date(v.dibuat_at).getTime() + 7 * 3600e3).toISOString().replace("T", " ")) : fmtPukul(c.dikirim_wib || c.dibuat_wib);
     return '<article class="kartu-video" data-kode="' + esc(c.kode) + '">' + pemutar + '<div class="isi-kartu">' +
       '<div class="atas">' + status(STATUS_GB, c.status) + '<span class="kode">' + esc(c.kode) + "</span></div>" +
@@ -1004,7 +1017,7 @@
         "<div><h6>Narator</h6><p>" + esc(v.narator || "Dany Saputra") + "</p><span>ElevenLabs</span></div>" +
         "<div><h6>Dibuat</h6><p>" + esc(dibuat) + "</p><span>versi " + esc(v.versi || "–") + "</span></div>" +
         "<div><h6>Sumber</h6><p>" + esc(String(c.penerbit || "–").replace(/\.(co\.id|com|id|net|org)$/i, "")) + "</p><span>" + esc(fmtHari(c.published_time)) + "</span></div>" +
-      "</div>" + rinci +
+      "</div>" + chip + rinci +
       '<div class="tombol-kartu"><button type="button" class="utama buka" data-kode="' + esc(c.kode) + '">' + (proses ? "Lihat kemajuan" : "Detail lengkap") + "</button>" +
         (v.path ? '<a href="' + esc(PUBLIK + "gb-video/" + v.path) + '" download>Unduh MP4</a>' : "") +
         (c.link ? '<a href="' + esc(aman(c.link)) + '" target="_blank" rel="noopener noreferrer">Berita sumber</a>' : "") + "</div>" +
