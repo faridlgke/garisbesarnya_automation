@@ -233,6 +233,7 @@
   .skor-bahan .k span { display: block; margin-top: 6px; font-size: .74rem; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); font-weight: 700; }
   .skor-bahan .k i { display: block; margin-top: 3px; font-style: normal; font-size: .78rem; color: var(--ink-2); }
   @media (max-width: 900px) { .skor-bahan { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (max-width: 480px) { #konfirmasi th:nth-child(3), #konfirmasi td:nth-child(3) { display: none; } #konfirmasi { min-width: 0; width: 100%; font-size: .82rem; } #konfirmasi td.lebar { min-width: 0; } #konfirmasi td:last-child { white-space: normal; } }
   @media (max-width: 480px) { #dipilih { min-width: 0; width: 100%; } #dipilih th:nth-child(2), #dipilih td:nth-child(2), #dipilih th:nth-child(4), #dipilih td:nth-child(4) { display: none; } #dipilih td:last-child { white-space: nowrap; } #dipilih td:first-child { white-space: nowrap; padding-right: 8px; } #dipilih td.lebar { min-width: 0; } }
   @media (max-width: 480px) { .skor-bahan { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; } .skor-bahan .k { padding: 10px 12px; } .skor-bahan .k b { font-size: 1.35rem; } }
   /* kartu video (mockup disetujui pemilik 27 Oktober 2026), di HP dua kolom dan rincian dilipat */
@@ -471,11 +472,12 @@
   <section class="lembar" id="p-konfirmasi" role="tabpanel" hidden>
     <div class="blok">
       <div class="scroll"><table id="konfirmasi">
-        <thead><tr><th>Kode</th><th>Gerbang</th><th>Judul</th><th>Dikirim ke WA</th></tr></thead>
-        <tbody><tr><td colspan="4" class="state">memuat…</td></tr></tbody>
+        <thead><tr><th>ID konten</th><th>Judul konten</th><th>Tipe konten</th><th>Status</th><th>Platform</th><th>Terbit</th></tr></thead>
+        <tbody><tr><td colspan="6" class="state">memuat…</td></tr></tbody>
       </table></div>
     </div>
-    <div class="blok">
+    <!-- Arahan pemilik disembunyikan dari Konfirmasi final (pemilik 28 Oktober 2026), datanya tetap dimuat. -->
+    <div class="blok" hidden>
       <h3>Arahan pemilik <span>ARAHAN &lt;teks&gt; lewat WhatsApp, tanpa kode cerita</span></h3>
       <div class="scroll"><table id="arahan">
         <thead><tr><th class="num">#</th><th>Status</th><th>Kata pemilik</th><th>Diterapkan sebagai</th><th>Diubah</th></tr></thead>
@@ -656,6 +658,7 @@
     var video = rows.filter(function (c) { return c.video && c.video.path || ["setuju", "video_revisi"].indexOf(c.status) >= 0; }).length;
     var drafKirim = rows.filter(drafTerkirim).length, tungguDraf = n(["pilih_naskah", "dikirim"]);
     var tunggu = rows.filter(function (c) { return c.status === "video_dikirim" && c.video && c.video.path; }).length;   // hanya yang videonya ada
+    var finalKirim = rows.filter(videoTerkirim).length;
     var terbit = n(["siap_terbit", "terbit"]);
     el("c1").textContent = id_(pilihan);
     el("k1").textContent = pilihan ? "topik kamu pilih" : "belum ada topik dipilih";
@@ -663,12 +666,12 @@
     el("c3").textContent = id_(video);
     el("c6").textContent = id_(drafKirim);
     el("k6").innerHTML = '<span class="dot ' + (tungguDraf ? "warn" : "") + '"></span>' + (tungguDraf ? tungguDraf + " menunggu balasan WA" : "tidak ada yang menunggu");
-    el("c4").textContent = id_(tunggu);
+    el("c4").textContent = id_(finalKirim);
     el("k4").innerHTML = '<span class="dot ' + (tunggu ? "warn" : "") + '"></span>' + (tunggu ? "video menunggu balasan WA" : "tidak ada video yang menunggu");
     el("c5").textContent = id_(terbit);
     el("k5").innerHTML = '<span class="dot ' + (n(["terbit"]) ? "ok" : (terbit ? "warn" : "")) + '"></span>' + (terbit ? n(["siap_terbit"]) + " siap terbit, Postiz menyusul" : "belum ada yang tayang");
     tulisKetProses();
-    var hidup = [pilihan + usulanTunggu > 0, draf + usulanTunggu > 0, drafKirim > 0, video > 0, tunggu + terbit > 0, terbit > 0];
+    var hidup = [pilihan + usulanTunggu > 0, draf + usulanTunggu > 0, drafKirim > 0, video > 0, finalKirim > 0, terbit > 0];
     var k = 0; while (k < hidup.length && hidup[k]) k++;
     // tahap yang sedang dikerjakan di laci yang berdenyut, kalau ada
     var aktif = -1;
@@ -1223,6 +1226,9 @@
     video_dikirim: ["ok", "ACC"], video_revisi: ["ok", "ACC"], siap_terbit: ["ok", "ACC"], terbit: ["ok", "ACC"], tolak: ["bad", "dihentikan"] };
   function drafTerkirim(c) { return c.naskah && c.naskah.length && HASIL_DRAF[c.status]; }
   var GERBANG_FINAL = { video_dikirim: "3 · video" };
+  // Konfirmasi final (pemilik 28 Oktober 2026): ID, judul, tipe, status, platform, waktu terbit; semua video yang dikirim.
+  var HASIL_FINAL = { video_dikirim: ["warn", "menunggu"], video_revisi: ["warn", "direvisi"], siap_terbit: ["ok", "ACC"], terbit: ["ok", "ACC"] };
+  function videoTerkirim(c) { return c.video && c.video.path && HASIL_FINAL[c.status]; }
   function gambarKonfirmasi(rows) {
     var tb = document.querySelector("#konfirmasi_draf tbody");
     var d = rows.filter(drafTerkirim).sort(function (a, b) { return String(b.dikirim_wib || b.dibuat_wib).localeCompare(String(a.dikirim_wib || a.dibuat_wib)); });
@@ -1230,7 +1236,18 @@
       return '<tr><td class="mono">' + esc(c.kode) + '</td><td class="lebar">' + esc(c.judul) + '</td><td class="redup">' + esc(fmtPukul(c.dikirim_wib || c.dibuat_wib)) +
         "</td><td>" + status(HASIL_DRAF, c.status) + "</td></tr>";
     }).join("") : '<tr><td colspan="4" class="state">Belum ada draft yang dikirim.</td></tr>';
-    isiKonfirmasi("#konfirmasi tbody", GERBANG_FINAL, rows.filter(function (c) { return GERBANG_FINAL[c.status] && c.video && c.video.path; }), "Tidak ada video yang menunggu balasan.");
+    var tf = document.querySelector("#konfirmasi tbody");
+    var f = rows.filter(videoTerkirim).sort(function (a, b) { return String(b.dikirim_wib || b.dibuat_wib).localeCompare(String(a.dikirim_wib || a.dibuat_wib)); });
+    tf.innerHTML = f.length ? f.map(function (c) {
+      var v = c.video || {}, t = v.terbit || {}, hasil = t.hasil || {};
+      var kanal = KANAL_TERBIT.filter(function (k) { return hasil[k[0]] && hasil[k[0]].ok; });
+      var waktu = (kanal[0] && hasil[kanal[0][0]].tayang_utc) || t.jadwal_utc;
+      var kapan = waktu ? fmtPukul(new Date(new Date(waktu).getTime() + 7 * 3600e3).toISOString().replace("T", " ")) : "–";
+      var sudah = kanal.some(function (k) { return hasil[k[0]].url; });
+      return '<tr><td class="mono">' + esc(c.kode) + '</td><td class="lebar">' + esc(c.judul) + '</td><td class="redup">Video Reels 9:16, ' + esc(Math.round(v.durasi || 0)) + " detik</td>" +
+        "<td>" + status(HASIL_FINAL, c.status) + "</td><td>" + (kanal.length ? esc(kanal.map(function (k) { return k[1]; }).join(", ")) : "–") + '</td><td class="redup">' +
+        esc(kapan) + (waktu ? (sudah ? " · tayang" : " · terjadwal") : "") + "</td></tr>";
+    }).join("") : '<tr><td colspan="6" class="state">Belum ada video yang dikirim untuk konfirmasi.</td></tr>';
   }
   function isiKonfirmasi(sel, GERBANG, rows, kosong) {
     var tb = document.querySelector(sel);
