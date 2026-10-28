@@ -227,6 +227,14 @@
   .garis { margin-inline: calc(100% / 12); }
   .st .ket b { color: var(--accent); font-weight: 600; }
   .lembar > .blok:first-child { margin-top: 0; }
+  .skor-bahan { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; }
+  .skor-bahan .k { border: 1px solid var(--rule); border-radius: 12px; padding: 14px 16px; background: var(--bg); }
+  .skor-bahan .k b { display: block; font-family: "Archivo Black", var(--judul); font-weight: 400; font-size: 1.7rem; line-height: 1.1; color: var(--ink); }
+  .skor-bahan .k span { display: block; margin-top: 6px; font-size: .74rem; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); font-weight: 700; }
+  .skor-bahan .k i { display: block; margin-top: 3px; font-style: normal; font-size: .78rem; color: var(--ink-2); }
+  @media (max-width: 900px) { .skor-bahan { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (max-width: 480px) { #dipilih { min-width: 0; width: 100%; } #dipilih th:nth-child(2), #dipilih td:nth-child(2), #dipilih th:nth-child(4), #dipilih td:nth-child(4) { display: none; } #dipilih td:first-child { white-space: nowrap; padding-right: 8px; } #dipilih td.lebar { min-width: 0; } }
+  @media (max-width: 480px) { .skor-bahan { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; } .skor-bahan .k { padding: 10px 12px; } .skor-bahan .k b { font-size: 1.35rem; } }
   /* kartu video (mockup disetujui pemilik 27 Oktober 2026), di HP dua kolom dan rincian dilipat */
   .galeri { display: flex; flex-direction: column; gap: 18px; }
   .label-daftar { margin: 0; font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); font-weight: 700; }
@@ -374,6 +382,19 @@
 
   <section class="lembar" id="p-bahan" role="tabpanel">
     <div class="blok">
+      <div class="skor-bahan" id="skor-bahan"><div class="state">memuat…</div></div>
+    </div>
+    <div class="blok">
+      <h3>Topik yang kamu pilih <span>dari usulan pagi, terbaru dulu</span></h3>
+      <div class="scroll"><table id="dipilih">
+        <thead><tr><th>Dipilih</th><th>Kode</th><th>Topik</th><th>Sumber</th><th>Status</th></tr></thead>
+        <tbody><tr><td colspan="5" class="state">memuat…</td></tr></tbody>
+      </table></div>
+    </div>
+    <!-- Tabel triase, per sumber, dan semua bahan disembunyikan atas permintaan pemilik 28 Oktober 2026
+         ("gausah tampil semua, cukup tampilkan yang udah aku acc"); tetap dimuat karena mengisi angka scorecard. -->
+    <div hidden>
+    <div class="blok">
       <h3>Hasil triase hari ini <span>peringkat di antara satu berita per kelompok topik</span></h3>
       <div class="scroll"><table id="pilihan">
         <thead><tr><th class="num">#</th><th class="num">Skor</th><th>Judul</th><th>Jenis</th><th>Penerbit</th><th>Pola yang dilihat</th></tr></thead>
@@ -404,6 +425,7 @@
         <tbody><tr><td colspan="4" class="state">memuat…</td></tr></tbody>
       </table></div>
       <div class="lagi"><button id="muat-lagi" type="button" class="ghost" hidden>Muat 100 lagi</button></div>
+    </div>
     </div>
   </section>
 
@@ -565,6 +587,37 @@
   // sebutan kode tersembunyi di teks data (alasan usulan, catatan arahan) diganti "cerita lain"
   function samarkan(t) { return DISEMBUNYIKAN.reduce(function (x, k) { return typeof x === "string" ? x.split(k).join("cerita lain") : x; }, t); }
   var CORONG = { bahan: null, baru: null, cerita: [] };
+  var SKOR = { sumber: null, triase: null };
+  var STATUS_DIPILIH = ["dipilih", "pilih_naskah", "draf", "dikirim", "revisi", "setuju", "video_dikirim", "video_revisi", "siap_terbit", "terbit"];
+  function dipilih(c) { return STATUS_DIPILIH.indexOf(c.status) >= 0 || (c.status === "tolak" && c.naskah && c.naskah.length); }
+  function isiSkor() {
+    var rows = CORONG.cerita, seminggu = new Date(Date.now() + 7 * 3600e3 - 7 * 864e5).toISOString().slice(0, 10);
+    var usulan = rows.filter(function (c) { return c.batch_usulan && String(c.tanggal) >= seminggu; }).length;
+    var pilih = rows.filter(dipilih), tayang = rows.filter(function (c) { return c.status === "terbit"; }).length;
+    var kartu = [
+      [CORONG.bahan, "Bahan berita", CORONG.baru != null ? "+" + id_(CORONG.baru) + " dua hari terakhir" : ""],
+      [SKOR.sumber, "Sumber dipantau", "Google News"],
+      [SKOR.triase, "Dinilai hari ini", "triase pagi"],
+      [usulan, "Usulan dikirim", "tujuh hari terakhir"],
+      [pilih.length, "Kamu pilih", "sejak awal"],
+      [tayang, "Tayang", "terjadwal atau terbit"]
+    ];
+    el("skor-bahan").innerHTML = kartu.map(function (k) {
+      return '<div class="k"><b>' + (k[0] == null ? "–" : id_(k[0])) + "</b><span>" + esc(k[1]) + "</span><i>" + esc(k[2]) + "</i></div>";
+    }).join("");
+  }
+  function gambarDipilih(rows) {
+    var tb = document.querySelector("#dipilih tbody");
+    rows = rows.filter(dipilih).sort(function (a, b) { return String(b.diputus_at || b.tanggal).localeCompare(String(a.diputus_at || a.tanggal)); });
+    if (!rows.length) { tb.innerHTML = '<tr><td colspan="5" class="state">Belum ada topik yang dipilih.</td></tr>'; return; }
+    tb.innerHTML = rows.map(function (c) {
+      var u = c.usulan || {};
+      return '<tr><td class="redup">' + esc(fmtTgl(c.tanggal)) + '</td><td class="mono">' + esc(c.kode) + '</td><td class="lebar"><b>' + esc(u.judul_onion || c.judul) + "</b>" +
+        (u.kenapa ? '<br><span class="redup">' + esc(u.kenapa) + "</span>" : "") + '</td><td class="redup">' +
+        (c.link ? '<a class="tautan" href="' + esc(aman(c.link)) + '" target="_blank" rel="noopener noreferrer">' + esc(c.penerbit || "berita") + "</a>" : esc(c.penerbit || "–")) +
+        "</td><td>" + status(STATUS_GB, c.status) + "</td></tr>";
+    }).join("");
+  }
   // Jadwal tetap: kurasi topik 06.00 WIB (DAG gb_harian), slot tayang 11.30 dan 18.30 WIB (gb/terbit.py JAM_SLOT).
   var JADWAL = [[6, 0, "Usulan topik berikutnya"], [11, 30, "Tayang berikutnya"], [18, 30, "Tayang berikutnya"]];
   function wibKeUtc(s) { var m = String(s || "").match(/^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})/); return m ? Date.UTC(+m[1], m[2] - 1, +m[3], +m[4] - 7, +m[5]) : 0; }
@@ -747,6 +800,7 @@
     return ["bad", "mati"];
   }
   function gambarDenyut(rows) {
+    SKOR.sumber = rows.length; isiSkor();
     var tb = document.querySelector("#denyut tbody");
     if (!rows.length) { tb.innerHTML = '<tr><td colspan="5" class="state">Belum ada bahan di tabel.</td></tr>'; return; }
     rows.sort(function (a, b) { return Number(a.jam_sejak_masuk) - Number(b.jam_sejak_masuk); });
@@ -1163,7 +1217,7 @@
     rows.forEach(function (c) { c.alasan_status = samarkan(c.alasan_status); CERITA[c.kode] = c; statusDikenal[c.kode] = c.status; });
     CORONG.cerita = rows;
     isiDenyut();
-    gambarDraf(rows); gambarUsulan(rows); gambarGaleri(rows); gambarTerbit(rows); gambarKonfirmasi(rows);
+    gambarDraf(rows); gambarUsulan(rows); gambarGaleri(rows); gambarTerbit(rows); gambarKonfirmasi(rows); gambarDipilih(rows); isiSkor();
     isiSungai();
     segarkanProgres();
     var awal = (location.hash || "").split("/")[1];
@@ -1174,8 +1228,9 @@
     var dua = new Date(Date.now() + 7 * 3600e3 - 2 * 864e5).toISOString().slice(0, 10);
     var janji = [
       Promise.all([hitung("rk_daftar_artikel?select=id" + B), hitung("rk_daftar_artikel?select=id" + B + "&published_time=gte." + dua)]).then(function (h) {
-        CORONG.bahan = h[0]; CORONG.baru = h[1]; isiSungai();
+        CORONG.bahan = h[0]; CORONG.baru = h[1]; isiSungai(); isiSkor();
       }).catch(function () { el("k1").textContent = "ringkasan gagal"; }),
+      hitung("rk_pilihan_harian?select=tanggal" + B + "&tanggal=eq." + hariIniWib()).then(function (n) { SKOR.triase = n; isiSkor(); }).catch(function () {}),
       ambil("rk_denyut_sumber?select=*" + B).then(function (rows) { gambarDenyut(rows); isiPilihanSumber(rows); }).catch(function (e) {
         document.querySelector("#denyut tbody").innerHTML = '<tr><td colspan="5" class="state err">' + esc(pesanGalat(e, "rk_denyut_sumber", "sql/001")) + "</td></tr>";
       }),
