@@ -483,7 +483,7 @@
   <nav class="sungai" role="tablist" aria-label="Tahap">
     <div class="garis" aria-hidden="true"><span class="mati"></span><span class="hidup"></span></div>
     <button class="st" role="tab" data-tab="bahan" aria-selected="true"><span class="ang" id="c1">–</span><span class="nm">Bahan <span class="info-i" role="button" tabindex="0" id="info-bahan-buka" aria-label="Cara topik dirumuskan" title="Cara topik dirumuskan">i</span></span><span class="titik"></span><span class="ket" id="k1">pemantauan dan kurasi</span></button>
-    <button class="st" role="tab" data-tab="draf"><span class="ang" id="c2">–</span><span class="nm">Draft</span><span class="titik"></span><span class="ket" id="k2">usulan, naskah, storyboard</span></button>
+    <button class="st" role="tab" data-tab="draf"><span class="ang" id="c2">–</span><span class="nm">Draft</span><span class="titik"></span><span class="ket" id="k2">usulan dan naskah</span></button>
     <button class="st" role="tab" data-tab="konfirmasi_draf"><span class="ang" id="c6">–</span><span class="nm">Konfirmasi draft</span><span class="titik"></span><span class="ket" id="k6">topik, naskah, storyboard</span></button>
     <button class="st" role="tab" data-tab="video"><span class="ang" id="c3">–</span><span class="nm">Desain/Video</span><span class="titik"></span><span class="ket" id="k3">video motion</span></button>
     <button class="st" role="tab" data-tab="konfirmasi"><span class="ang" id="c4">–</span><span class="nm">Konfirmasi final</span><span class="titik"></span><span class="ket" id="k4">video di WhatsApp</span></button>
@@ -804,7 +804,7 @@
     var draf = rows.filter(function (c) { return c.naskah && c.naskah.length || ["dipilih", "revisi", "pilih_naskah"].indexOf(c.status) >= 0; }).length;
     var pilihan = rows.filter(dipilih).length;
     var usulanTunggu = n(["usulan"]);
-    var video = rows.filter(function (c) { return c.video && c.video.path || ["setuju", "video_revisi"].indexOf(c.status) >= 0; }).length;
+    var video = rows.filter(diTahapVideo).length;
     var drafKirim = rows.filter(drafTerkirim).length, tungguDraf = n(["pilih_naskah", "dikirim"]);
     var tunggu = rows.filter(function (c) { return c.status === "video_dikirim" && c.video && c.video.path; }).length;   // hanya yang videonya ada
     var finalKirim = rows.filter(videoTerkirim).length;
@@ -887,7 +887,7 @@
       el("k2").innerHTML = '<span class="dot warn"></span><b>' + hitungPersen(ceritaJalan) + "%</b> " + esc(ceritaJalan.panel ? "storyboard " + jadi + "/" + ceritaJalan.panel.length + " panel" : "menulis naskah");
     } else {
       var tunggu = rows.filter(function (c) { return c.status === "usulan"; }).length;
-      el("k2").innerHTML = '<span class="dot ' + (tunggu ? "warn" : "ok") + '"></span>' + (tunggu ? tunggu + " usulan menunggu dipilih" : "usulan, naskah, storyboard");
+      el("k2").innerHTML = '<span class="dot ' + (tunggu ? "warn" : "ok") + '"></span>' + (tunggu ? tunggu + " usulan menunggu dipilih" : "usulan dan naskah");
     }
     if (videoJalan) {
       el("k3").innerHTML = '<span class="dot warn"></span><b>' + hitungPersen(videoJalan) + "%</b> " + esc(tanpaMerek(videoJalan.langkah).toLowerCase());
@@ -1263,7 +1263,7 @@
     g.querySelectorAll("video").forEach(function (vid) { vid.addEventListener("play", function () { document.querySelectorAll(".kartu-video video").forEach(function (lain) { if (lain !== vid) lain.pause(); }); }); });
   }
   function gambarGaleri(rows) {
-    daftarBerhalaman(el("galeri"), rows.filter(function (c) { return c.video && c.video.path || ["setuju", "video_revisi"].indexOf(c.status) >= 0; }),
+    daftarBerhalaman(el("galeri"), rows.filter(diTahapVideo),
       "Belum ada video. Video dibuat sesudah storyboard disetujui.");
   }
   // Tab Terbit seperti beritasawit.id (pemilik 28 Oktober 2026): sampul, waktu tayang, logo platform yang bisa diklik.
@@ -1388,6 +1388,10 @@
   var GERBANG_FINAL = { video_dikirim: "3 · video" };
   // Konfirmasi final (pemilik 28 Oktober 2026): ID, judul, tipe, status, platform, waktu terbit; semua video yang dikirim.
   var HASIL_FINAL = { video_dikirim: ["warn", "menunggu"], video_revisi: ["warn", "direvisi"], siap_terbit: ["ok", "ACC"], terbit: ["ok", "ACC"] };
+  // cerita yang kembali ke tahap naskah (REVISI naskah sesudah video ditolak) tidak tampil dengan video lamanya
+  function diTahapVideo(c) {
+    return ["setuju", "video_dikirim", "video_revisi", "siap_terbit", "terbit"].indexOf(c.status) >= 0 || (c.status === "tolak" && !!(c.video && c.video.path));
+  }
   function videoTerkirim(c) { return c.video && c.video.path && HASIL_FINAL[c.status]; }
   function gambarKonfirmasi(rows) {
     var tb = document.querySelector("#konfirmasi_draf tbody");
