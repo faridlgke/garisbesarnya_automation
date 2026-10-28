@@ -906,6 +906,9 @@
 
   // ------------------------------------------------------------- draft: storyboard dan naskah
   var terbuka = {};
+  // tautan dari WA (pesan rencana adegan): #draf/GBxxxx membuka baris draft itu
+  var BUKA_DRAF = (location.hash.match(/^#draf\/(GB[A-Z0-9]{4})$/) || [])[1];
+  if (BUKA_DRAF) terbuka[BUKA_DRAF] = true;
   var CERITA = {};
   function storyboardJadi(c) {
     var st = c.storyboard;
@@ -1011,6 +1014,7 @@
     }).join("");
     tb.querySelectorAll("tr.buka").forEach(function (tr) {
       tr.addEventListener("click", function () { var isi = tr.nextElementSibling; if (isi) { isi.hidden = !isi.hidden; terbuka[tr.getAttribute("data-kode")] = !isi.hidden; } });
+      if (BUKA_DRAF && tr.getAttribute("data-kode") === BUKA_DRAF) { setTimeout(function () { tr.scrollIntoView({ block: "start" }); }, 50); BUKA_DRAF = null; }
     });
   }
   function gambarUsulan(rows) {
