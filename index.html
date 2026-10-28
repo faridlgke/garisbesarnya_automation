@@ -233,7 +233,7 @@
   .skor-bahan .k span { display: block; margin-top: 6px; font-size: .74rem; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); font-weight: 700; }
   .skor-bahan .k i { display: block; margin-top: 3px; font-style: normal; font-size: .78rem; color: var(--ink-2); }
   @media (max-width: 900px) { .skor-bahan { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-  @media (max-width: 480px) { #dipilih { min-width: 0; width: 100%; } #dipilih th:nth-child(2), #dipilih td:nth-child(2), #dipilih th:nth-child(4), #dipilih td:nth-child(4) { display: none; } #dipilih td:first-child { white-space: nowrap; padding-right: 8px; } #dipilih td.lebar { min-width: 0; } }
+  @media (max-width: 480px) { #dipilih { min-width: 0; width: 100%; } #dipilih th:nth-child(2), #dipilih td:nth-child(2), #dipilih th:nth-child(4), #dipilih td:nth-child(4) { display: none; } #dipilih td:last-child { white-space: nowrap; } #dipilih td:first-child { white-space: nowrap; padding-right: 8px; } #dipilih td.lebar { min-width: 0; } }
   @media (max-width: 480px) { .skor-bahan { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; } .skor-bahan .k { padding: 10px 12px; } .skor-bahan .k b { font-size: 1.35rem; } }
   /* kartu video (mockup disetujui pemilik 27 Oktober 2026), di HP dua kolom dan rincian dilipat */
   .galeri { display: flex; flex-direction: column; gap: 18px; }
@@ -387,7 +387,7 @@
     <div class="blok">
       <h3>Topik yang kamu pilih <span>dari usulan pagi, terbaru dulu</span></h3>
       <div class="scroll"><table id="dipilih">
-        <thead><tr><th>Dipilih</th><th>Kode</th><th>Topik</th><th>Sumber</th><th>Status</th></tr></thead>
+        <thead><tr><th>Dipilih</th><th>Kode</th><th>Judul berita</th><th>Media</th><th>Tautan</th></tr></thead>
         <tbody><tr><td colspan="5" class="state">memuat…</td></tr></tbody>
       </table></div>
     </div>
@@ -453,7 +453,7 @@
   <section class="lembar" id="p-konfirmasi_draf" role="tabpanel" hidden>
     <div class="blok">
       <div class="scroll"><table id="konfirmasi_draf">
-        <thead><tr><th>Kode</th><th>Gerbang</th><th>Judul</th><th>Dikirim ke WA</th></tr></thead>
+        <thead><tr><th>Kode</th><th>Judul</th><th>Dikirim ke WA</th><th>Status</th></tr></thead>
         <tbody><tr><td colspan="4" class="state">memuat…</td></tr></tbody>
       </table></div>
     </div>
@@ -611,11 +611,9 @@
     rows = rows.filter(dipilih).sort(function (a, b) { return String(b.diputus_at || b.tanggal).localeCompare(String(a.diputus_at || a.tanggal)); });
     if (!rows.length) { tb.innerHTML = '<tr><td colspan="5" class="state">Belum ada topik yang dipilih.</td></tr>'; return; }
     tb.innerHTML = rows.map(function (c) {
-      var u = c.usulan || {};
-      return '<tr><td class="redup">' + esc(fmtTgl(c.tanggal)) + '</td><td class="mono">' + esc(c.kode) + '</td><td class="lebar"><b>' + esc(u.judul_onion || c.judul) + "</b>" +
-        (u.kenapa ? '<br><span class="redup">' + esc(u.kenapa) + "</span>" : "") + '</td><td class="redup">' +
-        (c.link ? '<a class="tautan" href="' + esc(aman(c.link)) + '" target="_blank" rel="noopener noreferrer">' + esc(c.penerbit || "berita") + "</a>" : esc(c.penerbit || "–")) +
-        "</td><td>" + status(STATUS_GB, c.status) + "</td></tr>";
+      return '<tr><td class="redup">' + esc(fmtTgl(c.tanggal)) + '</td><td class="mono">' + esc(c.kode) + '</td><td class="lebar">' + esc(dekode(c.news_title) || c.judul) +
+        '</td><td class="redup">' + esc(c.penerbit || "–") + "</td><td>" +
+        (c.link ? '<a class="tautan" href="' + esc(aman(c.link)) + '" target="_blank" rel="noopener noreferrer">buka berita ↗</a>' : "–") + "</td></tr>";
     }).join("");
   }
   // Jadwal tetap: kurasi topik 06.00 WIB (DAG gb_harian), slot tayang 11.30 dan 18.30 WIB (gb/terbit.py JAM_SLOT).
@@ -643,26 +641,25 @@
   function isiSungai() {
     var rows = CORONG.cerita;
     var n = function (st) { return rows.filter(function (c) { return st.indexOf(c.status) >= 0; }).length; };
-    var draf = rows.filter(function (c) { return c.naskah && c.naskah.length || ["dipilih", "revisi"].indexOf(c.status) >= 0; }).length;
+    var draf = rows.filter(function (c) { return c.naskah && c.naskah.length || ["dipilih", "revisi", "pilih_naskah"].indexOf(c.status) >= 0; }).length;
+    var pilihan = rows.filter(dipilih).length;
     var usulanTunggu = n(["usulan"]);
     var video = rows.filter(function (c) { return c.video && c.video.path || ["setuju", "video_revisi"].indexOf(c.status) >= 0; }).length;
-    var tungguDraf = n(["usulan", "pilih_naskah", "dikirim"]);
+    var drafKirim = rows.filter(drafTerkirim).length, tungguDraf = n(["pilih_naskah", "dikirim"]);
     var tunggu = rows.filter(function (c) { return c.status === "video_dikirim" && c.video && c.video.path; }).length;   // hanya yang videonya ada
     var terbit = n(["siap_terbit", "terbit"]);
-    if (CORONG.bahan != null) {
-      el("c1").textContent = id_(CORONG.bahan);
-      el("k1").textContent = "+" + id_(CORONG.baru || 0) + " terbit dua hari terakhir";
-    }
+    el("c1").textContent = id_(pilihan);
+    el("k1").textContent = pilihan ? "topik kamu pilih" : "belum ada topik dipilih";
     el("c2").textContent = id_(draf);
     el("c3").textContent = id_(video);
-    el("c6").textContent = id_(tungguDraf);
-    el("k6").innerHTML = '<span class="dot ' + (tungguDraf ? "warn" : "") + '"></span>' + (tungguDraf ? "menunggu balasan WA" : "tidak ada yang menunggu");
+    el("c6").textContent = id_(drafKirim);
+    el("k6").innerHTML = '<span class="dot ' + (tungguDraf ? "warn" : "") + '"></span>' + (tungguDraf ? tungguDraf + " menunggu balasan WA" : "tidak ada yang menunggu");
     el("c4").textContent = id_(tunggu);
     el("k4").innerHTML = '<span class="dot ' + (tunggu ? "warn" : "") + '"></span>' + (tunggu ? "video menunggu balasan WA" : "tidak ada video yang menunggu");
     el("c5").textContent = id_(terbit);
     el("k5").innerHTML = '<span class="dot ' + (n(["terbit"]) ? "ok" : (terbit ? "warn" : "")) + '"></span>' + (terbit ? n(["siap_terbit"]) + " siap terbit, Postiz menyusul" : "belum ada yang tayang");
     tulisKetProses();
-    var hidup = [CORONG.bahan > 0, draf + usulanTunggu > 0, tungguDraf + video > 0, video > 0, tunggu + terbit > 0, terbit > 0];
+    var hidup = [pilihan + usulanTunggu > 0, draf + usulanTunggu > 0, drafKirim > 0, video > 0, tunggu + terbit > 0, terbit > 0];
     var k = 0; while (k < hidup.length && hidup[k]) k++;
     // tahap yang sedang dikerjakan di laci yang berdenyut, kalau ada
     var aktif = -1;
@@ -1185,10 +1182,19 @@
   });
 
   // ------------------------------------------------------------- konfirmasi dan arahan
-  var GERBANG_DRAF = { usulan: "1 · usulan topik", pilih_naskah: "1b · pilih naskah A/B/C", dikirim: "2 · storyboard dan naskah" };
+  // Konfirmasi draft (pemilik 28 Oktober 2026): naskah dan storyboard yang sudah dikirim ke WA, dengan hasilnya.
+  // Usulan topik bukan draft, jadi tidak dihitung di sini (dulu angkanya bisa lebih tinggi dari Draft).
+  var HASIL_DRAF = { dikirim: ["warn", "menunggu"], pilih_naskah: ["warn", "menunggu"], revisi: ["warn", "direvisi"], setuju: ["ok", "ACC"],
+    video_dikirim: ["ok", "ACC"], video_revisi: ["ok", "ACC"], siap_terbit: ["ok", "ACC"], terbit: ["ok", "ACC"], tolak: ["bad", "dihentikan"] };
+  function drafTerkirim(c) { return c.naskah && c.naskah.length && HASIL_DRAF[c.status]; }
   var GERBANG_FINAL = { video_dikirim: "3 · video" };
   function gambarKonfirmasi(rows) {
-    isiKonfirmasi("#konfirmasi_draf tbody", GERBANG_DRAF, rows.filter(function (c) { return GERBANG_DRAF[c.status]; }), "Tidak ada draft yang menunggu balasan.");
+    var tb = document.querySelector("#konfirmasi_draf tbody");
+    var d = rows.filter(drafTerkirim).sort(function (a, b) { return String(b.dikirim_wib || b.dibuat_wib).localeCompare(String(a.dikirim_wib || a.dibuat_wib)); });
+    tb.innerHTML = d.length ? d.map(function (c) {
+      return '<tr><td class="mono">' + esc(c.kode) + '</td><td class="lebar">' + esc(c.judul) + '</td><td class="redup">' + esc(fmtPukul(c.dikirim_wib || c.dibuat_wib)) +
+        "</td><td>" + status(HASIL_DRAF, c.status) + "</td></tr>";
+    }).join("") : '<tr><td colspan="4" class="state">Belum ada draft yang dikirim.</td></tr>';
     isiKonfirmasi("#konfirmasi tbody", GERBANG_FINAL, rows.filter(function (c) { return GERBANG_FINAL[c.status] && c.video && c.video.path; }), "Tidak ada video yang menunggu balasan.");
   }
   function isiKonfirmasi(sel, GERBANG, rows, kosong) {
