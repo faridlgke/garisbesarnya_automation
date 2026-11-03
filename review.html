@@ -588,6 +588,18 @@
     var sb = sumber(C); if (sb) isi.appendChild(bagian("Sumber", sb));
   }
 
+  // Tombol ACC, Revisi, dan Stop di tab Konfirmasi halaman status menunjuk ke /review/KODE#acc,
+  // #revisi, atau #stop. Lembarnya dibuka dengan menekan tombol bar yang sama, jadi syarat
+  // tahap dan pilihan jam tetap satu salinan. Tautan lama tanpa pagar tidak berubah.
+  function bukaDariTautan() {
+    var peta = { acc: ['[data-buka="acc"]', '[data-buka="waktu"][data-mode="acc"]', '[data-yakin="acc"]'], revisi: ['[data-buka="revisi"]'], stop: ['[data-buka="stop"]'] };
+    var h = location.hash.slice(1), bar = document.getElementById("bar");
+    if (!peta[h] || !bar || bar.hidden) return;
+    history.replaceState(null, "", location.pathname);
+    var b = bar.querySelector(peta[h].join(", "));
+    if (b) b.click();
+  }
+
   function muatCerita() {
     Promise.all([
       baca(MEREK.view + "?select=*&kode=eq." + kode),
@@ -602,7 +614,7 @@
         isiCerita();
         var p = INFO && INFO.keputusan;
         if (p && (p.status === "antre" || p.status === "diproses")) { layarTunggu(p.aksi); mulaiPantau(p.dibuat_at); }
-        else layar("review");
+        else { layar("review"); bukaDariTautan(); }
         if (h[1] && !h[1].ok) { var u = $("#pengumuman"); u.textContent = h[1].alasan || "Review belum siap."; u.hidden = false; }
       });
     }).catch(function (e) { if (e.message !== "sesi") gagalMuat("Tidak tersambung, muat ulang halaman ini."); });
