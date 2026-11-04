@@ -404,7 +404,7 @@
     return li;
   }
   function muatDaftar() {
-    baca(MEREK.view + "?select=kode,status,judul,batch_usulan,video,foto,dibuat_wib,dikirim_wib&limit=120").then(function (rows) {
+    baca(MEREK.view + "?select=kode,status,judul,batch_usulan,video,dibuat_wib,dikirim_wib&limit=120").then(function (rows) {
       var tunggu = [], batch = {};
       rows.forEach(function (c) {
         if (MENUNGGU.indexOf(c.status) < 0) return;
