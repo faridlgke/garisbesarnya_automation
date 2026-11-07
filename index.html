@@ -538,6 +538,27 @@
     .tabel-hp td.state { grid-column: 1 / -1; }
   }
   @media (max-width: 760px) { .lihat .isi-video { grid-template-columns: minmax(0, 1fr); } }
+  /* ==== tampilan HP (bersama) ==== */
+  /* Pemilik 7 November 2026: "tampilan hp berantakan". Blok yang sama di halaman status BS, PURNA,
+     garisbesarnya, dan FYGO. Tabel yang punya kolom judul atau teks lebar jadi kartu bertumpuk di layar
+     sempit (kode dan status di atas, judul selebar layar), karena kolom judul dipatok minimal 240 sampai
+     320px dan sisanya tidak boleh membungkus, jadi judulnya terpotong di kanan. Tabel angka murni tetap
+     digeser ke samping, judul kolomnya dibutuhkan untuk membaca angkanya. */
+  @media (max-width: 600px) {
+    .meta { flex-wrap: wrap; row-gap: 8px; } .meta #dimuat { flex: 1 0 100%; }
+    table:has(td.judul, td.lebar), table:has(td.judul, td.lebar) > tbody, table:has(td.judul, td.lebar) > thead { display: block; }
+    table:has(td.judul, td.lebar) tr:has(> th) { display: none; }
+    table:has(td.judul, td.lebar) tr { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; padding: 12px 0; border-bottom: 1px solid var(--rule); }
+    table:has(td.judul, td.lebar) tr[hidden] { display: none; }
+    table:has(td.judul, td.lebar) tr.buka:has(+ tr.isi:not([hidden])) { border-bottom: 0; }
+    table:has(td.judul, td.lebar) tr:last-child { border-bottom: 0; }
+    table:has(td.judul, td.lebar) td { padding: 0; border: 0; white-space: normal; min-width: 0; }
+    table:has(td.judul, td.lebar) td.judul, table:has(td.judul, td.lebar) td.lebar, table:has(td.judul, td.lebar) td[colspan] { flex: 1 0 100%; max-width: none; }
+    table:has(td.judul, td.lebar) tr.isi { padding-top: 0; }
+    table:has(td.judul, td.lebar) td.num { text-align: left; }
+    table:has(td.judul, td.lebar) .s { white-space: normal; }
+  }
+  /* ==== akhir tampilan HP ==== */
 </style>
 </head>
 <body>
